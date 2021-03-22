@@ -1,0 +1,5 @@
+program {
+	define {
+		natural teste 2
+	}
+}

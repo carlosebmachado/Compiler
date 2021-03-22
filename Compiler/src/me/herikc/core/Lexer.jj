@@ -1,0 +1,89 @@
+PARSER_BEGIN(Lexer)
+
+package me.herikc.core;
+
+public class Lexer {
+  
+}
+
+PARSER_END(Lexer)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+/* KEY WORDS */
+TOKEN :
+{
+  <PROGRAM: "program">
+| <DEFINE: "define">
+| <NOT: "not">
+| <VARIABLE: "variable">
+| <IS: "is">
+| <NATURAL: "natural">
+| <REAL: "real">
+| <CHAR: "char">
+| <BOOLEAN: "boolean">
+| <EXECUTE: "execute">
+| <SET: "set">
+| <TO: "to">
+| <GET: "get">
+| <PUT: "put">
+| <VERIFY: "verify">
+| <TRUE: "true">
+| <FALSE: "false">
+| <LOOP: "loop">
+| <WHILE: "while">
+| <DO: "do">
+
+}
+
+/* SPECIAL SYMBOLS */
+TOKEN :
+{
+  <LINE_COMMENT: ":-">
+| <LBRACE: "{">
+| <RBRACE: "}">
+| <PARENTHESESL: "(">
+| <PARANTHESESR: ")">
+| <DOT: ".">
+| <COMMA: ",">
+| <PLUS: "+">
+| <MINUS: "-">
+| <POWER: "**">
+| <MULTIPLICATION: "*">
+| <DIVISION: "/">
+| <ENTIRE_DIVISION: "%">
+| <REST: "%%">
+| <EQUAL: "==">
+| <DIFFERENT: "!=">
+| <SMALLER: "<">
+| <LARGER: ">">
+| <SMALLER_EQUAL: "<=">
+| <LARGER_EQUAL: ">=">
+| <AND: "&">
+| <OR: "|">
+| <NOT_SYMBOL: "!">
+}
+
+/* IDENTIFIERS */
+TOKEN : 
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<UNSIGNED>)+ >
+|   <LETTER: ["_","a"-"z","A"-"Z"] >
+|   <UNSIGNED: (["0" - "9"])+ >
+|   <SIGNED: ("-")? (["0" - "9"])+ >
+|   <VALUE: (<LETTER>|<SIGNED>)+ >
+|   <NOT_VARIABLE: (<NATURAL>|<REAL>|<CHAR>|<BOOLEAN>) <IDENTIFIER> <VALUE> >
+}
+
+
+
+
+
+
+
