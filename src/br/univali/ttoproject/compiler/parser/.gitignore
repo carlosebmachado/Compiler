@@ -5,3 +5,6 @@
 /SimpleCharStream.java
 /Token.java
 /TokenMgrError.java
+/ParserTTO.java
+/ParserTTOConstants.java
+/ParserTTOTokenManager.java

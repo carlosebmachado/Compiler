@@ -1,4 +1,4 @@
-package me.herikc.compiler;
+package br.univali.ttoproject.compiler;
 
 import java.io.FileNotFoundException;
 import java.io.Reader;
@@ -6,13 +6,13 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.herikc.core.Lexer;
-import me.herikc.core.LexerConstants;
-import me.herikc.core.Token;
+import br.univali.ttoproject.compiler.parser.ParserTTO;
+import br.univali.ttoproject.compiler.parser.ParserTTOConstants;
+import br.univali.ttoproject.compiler.parser.Token;
 
 public class Compiler {
 	
-	private static Lexer parser;
+	private static ParserTTO parser;
 	
 	public Compiler() {
 		setParser(null);
@@ -28,7 +28,7 @@ public class Compiler {
 		build(reader);
 		
 		/*try {
-			parser = new Lexer(new FileInputStream(new File("C:\\Users\\Windows\\eclipse-workspace\\Compiler\\teste.txt")));
+			parser = new Lexer(new FileInputStream(new File("C:\\Users\\Windows\\eclipse-workspace\\Compiler\\test.tto")));
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}*/
@@ -50,14 +50,14 @@ public class Compiler {
 	}
 	
 	public static void build(Reader reader) {
-		parser = new Lexer(reader);
+		parser = new ParserTTO(reader);
 		try {
 			for (Token token : tokenize()) {			
 				System.out.println(
 						"Linha: " + token.beginLine
 						+ "\nColuna:" + token.beginColumn
 						+ "\nNumero da Categoria: " + token.kind
-						+ "\nCategoria: " + LexerConstants.tokenImage[token.kind]
+						+ "\nCategoria: " + ParserTTOConstants.tokenImage[token.kind]
 						+ "\nToken: " + token.image + "\n"
 						);
 			}
@@ -69,19 +69,19 @@ public class Compiler {
 	public static List<Token> tokenize() throws FileNotFoundException {
 		List<Token> tokens = new ArrayList<>();
 
-		Token token = Lexer.getNextToken();
-		while (token.kind != LexerConstants.EOF) {
+		Token token = ParserTTO.getNextToken();
+		while (token.kind != ParserTTOConstants.EOF) {
 			tokens.add(token);
-			token = Lexer.getNextToken();
+			token = ParserTTO.getNextToken();
 		}
 		return tokens;
 	}
 
-	public Lexer getParser() {
+	public ParserTTO getParser() {
 		return parser;
 	}
 
-	public void setParser(Lexer parser) {
+	public void setParser(ParserTTO parser) {
 		Compiler.parser = parser;
 	}
 
