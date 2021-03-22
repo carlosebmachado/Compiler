@@ -3,6 +3,7 @@ program {
     define {
         not variable
             natural INT_CONST = 10.
+			natural INT_CONST2 = 10.
             real FLOAT_CONST = 5.0.
         variable
             char char_var.
@@ -12,3 +13,4 @@ program {
         set bool_var to true.
     }
 }
+

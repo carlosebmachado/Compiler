@@ -12,20 +12,20 @@ import br.univali.ttoproject.compiler.parser.Token;
 
 public class Compiler {
 	
-	private static Parser parser;
+	private Parser parser;
 	
 	public Compiler() {
 		setParser(null);
 	}
 	
 	public static void main(String[] args) {	
-		Reader reader = new StringReader("program {\r\n"
+		/*Reader reader = new StringReader("program {\r\n"
 				+ "	define {\r\n"
 				+ "		natural teste 2\r\n"
 				+ "	}\r\n"
 				+ "}");
 		
-		build(reader);
+		build(reader);*/
 		
 		/*try {
 			parser = new Lexer(new FileInputStream(new File("C:\\Users\\Windows\\eclipse-workspace\\Compiler\\test.tto")));
@@ -49,30 +49,39 @@ public class Compiler {
 		
 	}
 	
-	public static void build(Reader reader) {
+	public String build(Reader reader) {
 		parser = new Parser(reader);
+		var strTokenizer = "";
+		
 		try {
-			for (Token token : tokenize()) {			
-				System.out.println(
+			for (Token token : tokenize()) {
+				strTokenizer += "Linha: " + token.beginLine
+						+ "\nColuna:" + token.beginColumn
+						+ "\nNumero da Categoria: " + token.kind
+						+ "\nCategoria: " + ParserConstants.tokenImage[token.kind]
+						+ "\nToken: " + token.image + "\n\n";
+				/*System.out.println(
 						"Linha: " + token.beginLine
 						+ "\nColuna:" + token.beginColumn
 						+ "\nNumero da Categoria: " + token.kind
 						+ "\nCategoria: " + ParserConstants.tokenImage[token.kind]
 						+ "\nToken: " + token.image + "\n"
-						);
+						);*/
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+		return strTokenizer;
 	}
 	
-	public static List<Token> tokenize() throws FileNotFoundException {
+	public List<Token> tokenize() throws FileNotFoundException {
 		List<Token> tokens = new ArrayList<>();
 
-		Token token = Parser.getNextToken();
+		Token token = parser.getNextToken();
 		while (token.kind != ParserConstants.EOF) {
 			tokens.add(token);
-			token = Parser.getNextToken();
+			token = parser.getNextToken();
 		}
 		return tokens;
 	}
@@ -82,7 +91,7 @@ public class Compiler {
 	}
 
 	public void setParser(Parser parser) {
-		Compiler.parser = parser;
+		this.parser = parser;
 	}
 
 }

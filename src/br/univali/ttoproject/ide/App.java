@@ -54,6 +54,7 @@ public class App extends JFrame {
 
 	private JPanel contentPane;
 	private JTextArea textArea;
+	private JTextPane epConsole;
 
 	private FileTTO file;
 	private JLabel lblLnCol;
@@ -63,25 +64,24 @@ public class App extends JFrame {
 
 	private boolean compiled = false;
 	private boolean running = false;
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        try {
-            UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
 
-        /* Create and display the form */
+	/**
+	 * @param args the command line arguments
+	 */
+	public static void main(String args[]) {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException ex) {
+			java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (InstantiationException ex) {
+			java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (IllegalAccessException ex) {
+			java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+			java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		}
+
+		/* Create and display the form */
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -92,7 +92,7 @@ public class App extends JFrame {
 				}
 			}
 		});
-    }
+	}
 
 	/**
 	 * Create the frame.
@@ -351,7 +351,7 @@ public class App extends JFrame {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.CENTER);
 
-		JTextPane epConsole = new JTextPane();
+		epConsole = new JTextPane();
 		epConsole.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -384,9 +384,9 @@ public class App extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		splitPane.setLeftComponent(scrollPane);
 
-//		TextLineNumber tln = new TextLineNumber(textArea);
-//		scrollPane.setRowHeaderView(tln);
-//		scrollPane.setViewportView(textArea);
+		TextLineNumber tln = new TextLineNumber(textArea);
+		scrollPane.setRowHeaderView(tln);
+		scrollPane.setViewportView(textArea);
 	}
 
 	/**********************************************************************************************************************************
@@ -460,7 +460,7 @@ public class App extends JFrame {
 			return;
 		}
 		compiled = true;
-		Compiler.build(new StringReader(textArea.getText()));
+		epConsole.setText(new Compiler().build(new StringReader(textArea.getText())));
 	}
 
 	public void fRun() {
