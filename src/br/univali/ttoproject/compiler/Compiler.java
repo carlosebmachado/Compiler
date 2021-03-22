@@ -55,18 +55,16 @@ public class Compiler {
 		
 		try {
 			for (Token token : tokenize()) {
-				strTokenizer += "Linha: " + token.beginLine
-						+ "\nColuna:" + token.beginColumn
-						+ "\nNumero da Categoria: " + token.kind
-						+ "\nCategoria: " + ParserConstants.tokenImage[token.kind]
-						+ "\nToken: " + token.image + "\n\n";
-				/*System.out.println(
-						"Linha: " + token.beginLine
-						+ "\nColuna:" + token.beginColumn
-						+ "\nNumero da Categoria: " + token.kind
-						+ "\nCategoria: " + ParserConstants.tokenImage[token.kind]
-						+ "\nToken: " + token.image + "\n"
-						);*/
+				
+				if(ParserConstants.tokenImage[token.kind] == "<UNKNOWN>") {
+					strTokenizer += "Lexical error at line " + token.beginLine + ", column " + token.beginColumn + ". The following character '" + token.image +  "' is invalid.\n\n";
+				} else {
+					strTokenizer += "Line: " + token.beginLine
+							+ "\nColumn:" + token.beginColumn
+							+ "\nCategory Number: " + token.kind
+							+ "\nCategory: " + ParserConstants.tokenImage[token.kind]
+							+ "\nToken: " + token.image + "\n\n";
+				}
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

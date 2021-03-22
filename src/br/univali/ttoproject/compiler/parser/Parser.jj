@@ -89,7 +89,7 @@ TOKEN :
 //|   <NOT_VARIABLE: (<NATURAL>|<REAL>|<CHAR>|<BOOLEAN>) <IDENTIFIER> <VALUE> >
 }
 
-
+<*> TOKEN : { <UNKNOWN: ~[]> }
 
 
 
