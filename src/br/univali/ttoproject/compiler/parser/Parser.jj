@@ -1,12 +1,12 @@
-PARSER_BEGIN(ParserTTO)
+PARSER_BEGIN(Parser)
 
 package br.univali.ttoproject.compiler.parser;
 
-public class ParserTTO {
+public class Parser {
   
 }
 
-PARSER_END(ParserTTO)
+PARSER_END(Parser)
 
 SKIP :
 {

@@ -6,13 +6,13 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.univali.ttoproject.compiler.parser.ParserTTO;
-import br.univali.ttoproject.compiler.parser.ParserTTOConstants;
+import br.univali.ttoproject.compiler.parser.Parser;
+import br.univali.ttoproject.compiler.parser.ParserConstants;
 import br.univali.ttoproject.compiler.parser.Token;
 
 public class Compiler {
 	
-	private static ParserTTO parser;
+	private static Parser parser;
 	
 	public Compiler() {
 		setParser(null);
@@ -50,14 +50,14 @@ public class Compiler {
 	}
 	
 	public static void build(Reader reader) {
-		parser = new ParserTTO(reader);
+		parser = new Parser(reader);
 		try {
 			for (Token token : tokenize()) {			
 				System.out.println(
 						"Linha: " + token.beginLine
 						+ "\nColuna:" + token.beginColumn
 						+ "\nNumero da Categoria: " + token.kind
-						+ "\nCategoria: " + ParserTTOConstants.tokenImage[token.kind]
+						+ "\nCategoria: " + ParserConstants.tokenImage[token.kind]
 						+ "\nToken: " + token.image + "\n"
 						);
 			}
@@ -69,19 +69,19 @@ public class Compiler {
 	public static List<Token> tokenize() throws FileNotFoundException {
 		List<Token> tokens = new ArrayList<>();
 
-		Token token = ParserTTO.getNextToken();
-		while (token.kind != ParserTTOConstants.EOF) {
+		Token token = Parser.getNextToken();
+		while (token.kind != ParserConstants.EOF) {
 			tokens.add(token);
-			token = ParserTTO.getNextToken();
+			token = Parser.getNextToken();
 		}
 		return tokens;
 	}
 
-	public ParserTTO getParser() {
+	public Parser getParser() {
 		return parser;
 	}
 
-	public void setParser(ParserTTO parser) {
+	public void setParser(Parser parser) {
 		Compiler.parser = parser;
 	}
 
