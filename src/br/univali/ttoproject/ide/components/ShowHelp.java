@@ -21,6 +21,7 @@ public class ShowHelp extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
+	@SuppressWarnings("serial")
 	public ShowHelp() {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);

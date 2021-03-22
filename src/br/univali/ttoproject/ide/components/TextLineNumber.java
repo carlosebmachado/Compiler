@@ -217,6 +217,7 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 	/**
 	 *  Draw the line numbers
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -296,6 +297,7 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 	/*
 	 *  Determine the Y offset for the current row
 	 */
+	@SuppressWarnings("deprecation")
 	private int getOffsetY(int rowStartOffset, FontMetrics fontMetrics)
 		throws BadLocationException {
 		//  Get the bounding rectangle of the row
@@ -382,6 +384,7 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
 	 *  A document change may affect the number of displayed lines of text.
 	 *  Therefore the lines numbers will also change.
 	 */
+	@SuppressWarnings("deprecation")
 	private void documentChanged() {
 		//  View of the component has not been updated at the time
 		//  the DocumentEvent is fired
