@@ -57,7 +57,7 @@ public class App extends JFrame {
 
 	private JPanel contentPane;
 	private JTextArea textArea;
-	private JTextPane epConsole;
+	private JTextArea epConsole;
 
 	private FileTTO file;
 	private JLabel lblLnCol;
@@ -354,14 +354,9 @@ public class App extends JFrame {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.CENTER);
 
-		epConsole = new JTextPane();
-		epConsole.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent e) {
-				if (!running)
-					e.consume();
-			}
-		});
+		epConsole = new JTextArea();
+		epConsole.setWrapStyleWord(true);
+		epConsole.setTabSize(4);
 		splitPane.setRightComponent(epConsole);
 
 		textArea = new JTextArea();
@@ -387,9 +382,9 @@ public class App extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		splitPane.setLeftComponent(scrollPane);
 
-		TextLineNumber tln = new TextLineNumber(textArea);
-		scrollPane.setRowHeaderView(tln);
-		scrollPane.setViewportView(textArea);
+//		TextLineNumber tln = new TextLineNumber(textArea);
+//		scrollPane.setRowHeaderView(tln);
+//		scrollPane.setViewportView(textArea);
 	}
 
 	/**********************************************************************************************************************************
