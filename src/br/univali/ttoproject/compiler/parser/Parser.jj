@@ -2,14 +2,14 @@ options {
 	STATIC = false;
 	//ERROR_REPORTING = true;
 	//DEBUG_TOKEN_MANAGER = true;
-} 
+}
 
 PARSER_BEGIN(Parser)
 
 package br.univali.ttoproject.compiler.parser;
 
 public class Parser {
-  
+
 }
 
 PARSER_END(Parser)
@@ -45,7 +45,6 @@ TOKEN :
 | <LOOP: "loop">
 | <WHILE: "while">
 | <DO: "do">
-
 }
 
 /* SPECIAL SYMBOLS */
@@ -77,7 +76,7 @@ TOKEN :
 }
 
 /* IDENTIFIERS */
-TOKEN : 
+TOKEN :
 {
     <IDENTIFIER: <LETTER> (<LETTER>|<UNSIGNED>)+>
 |   <LETTER: ["_","a"-"z","A"-"Z"]>
@@ -90,8 +89,3 @@ TOKEN :
 }
 
 <*> TOKEN : { <UNKNOWN: ~[]> }
-
-
-
-
-
