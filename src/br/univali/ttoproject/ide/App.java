@@ -356,9 +356,9 @@ public class App extends JFrame {
         contentPane.add(splitPane, BorderLayout.CENTER);
 
         epConsole = new JTextArea();
-        epConsole.setWrapStyleWord(true);
         epConsole.setTabSize(4);
-        splitPane.setRightComponent(epConsole);
+        JScrollPane scrollPaneConsole = new JScrollPane(epConsole);
+        splitPane.setRightComponent(scrollPaneConsole);
 
         textArea = new JTextArea();
         textArea.setTabSize(4);
@@ -420,25 +420,27 @@ public class App extends JFrame {
         textArea.setText(file.load());
     }
 
-    public void fSave() {
+    public boolean fSave() {
         if (newFile) {
-            fSaveAs();
+            return fSaveAs();
         } else if (!savedFile) {
             resetFileVars();
             setTitle(getTitle().substring(0, getTitle().length() - 2));
             file.save(textArea.getText());
         }
+        return true;
     }
 
-    public void fSaveAs() {
+    public boolean fSaveAs() {
         var fullPath = getFilePath(true);
         if (fullPath.equals(""))
-            return;
+            return false;
 
         file = new FileTTO(fullPath);
         resetFileVars();
         setTitle("Compiler - " + file.getName());
         file.save(textArea.getText());
+        return true;
     }
 
     public void fCut() {
@@ -555,7 +557,7 @@ public class App extends JFrame {
         int result = JOptionPane.showConfirmDialog(null, "Would you like to save the file?", "Save",
                 JOptionPane.YES_NO_CANCEL_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            fSave();
+            return fSave();
         }
         if (result == JOptionPane.NO_OPTION) {
 
