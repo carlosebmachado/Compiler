@@ -1,1 +1,0 @@
-java -cp C:/javacc/target/javacc.jar javacc Parser.jj
