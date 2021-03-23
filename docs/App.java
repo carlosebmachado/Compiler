@@ -1,30 +1,64 @@
 package br.univali.ttoproject.ide;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Utilities;
+
 import br.univali.ttoproject.compiler.Compiler;
 import br.univali.ttoproject.ide.components.ShowHelp;
 import br.univali.ttoproject.ide.components.TextLineNumber;
 import br.univali.ttoproject.ide.core.FileTTO;
 
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
+import javax.swing.JButton;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JMenu;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JToolBar;
+import javax.swing.ImageIcon;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
+import java.awt.Dimension;
+import java.awt.EventQueue;
+
+import javax.swing.JLabel;
+import java.awt.FlowLayout;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JFileChooser;
+import javax.swing.JTextPane;
+import javax.swing.JScrollPane;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Utilities;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.StringReader;
+import javax.swing.event.CaretEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.Font;
+import java.awt.Toolkit;
 
 public class App extends JFrame {
 
-    private JPanel panelMain;
+    private static final long serialVersionUID = 5107264097912675169L;
 
+    private JPanel contentPane;
     private JTextArea textArea;
     private JTextArea epConsole;
-    private JLabel lblLnCol;
 
     private FileTTO file;
+    private JLabel lblLnCol;
 
     private boolean newFile = true;
     private boolean savedFile = true;
@@ -32,10 +66,19 @@ public class App extends JFrame {
     private boolean compiled = false;
     private boolean running = false;
 
-    public static void main(String[] args) {
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
@@ -43,7 +86,8 @@ public class App extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new App();
+                    App app = new App();
+                    app.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -51,6 +95,9 @@ public class App extends JFrame {
         });
     }
 
+    /**
+     * Create the frame.
+     */
     public App() {
         // Inicialização
         file = new FileTTO();
@@ -58,19 +105,21 @@ public class App extends JFrame {
         // Interface
         setTitle("Compiler");
         setIconImage(Toolkit.getDefaultToolkit().getImage(App.class.getResource("/img/icon.png")));
-        setContentPane(panelMain);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setBounds(0, 0, 800, 450);
         setMinimumSize(new Dimension(400, 225));
         setLocationRelativeTo(null);
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                fExit();
+                if (savedFile)
+                    System.exit(0);
+                else if (verifySaveFile())
+                    System.exit(0);
             }
         });
 
-        // Components
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
@@ -115,7 +164,10 @@ public class App extends JFrame {
         JMenuItem mntmExit = new JMenuItem("Exit");
         mntmExit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fExit();
+                if (savedFile)
+                    System.exit(0);
+                else if (verifySaveFile())
+                    System.exit(0);
             }
         });
         mnFile.add(mntmExit);
@@ -190,9 +242,13 @@ public class App extends JFrame {
         });
         mnAbout.add(mntmNewMenuItem_1);
 
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        contentPane.setLayout(new BorderLayout(0, 0));
+        setContentPane(contentPane);
 
         JToolBar toolBar = new JToolBar();
-        panelMain.add(toolBar, BorderLayout.NORTH);
+        contentPane.add(toolBar, BorderLayout.NORTH);
 
         JButton btnNew = new JButton("");
         btnNew.addActionListener(new ActionListener() {
@@ -278,7 +334,7 @@ public class App extends JFrame {
 
         JPanel panelStatusBar = new JPanel();
         panelStatusBar.setMinimumSize(new Dimension(10, 16));
-        panelMain.add(panelStatusBar, BorderLayout.SOUTH);
+        contentPane.add(panelStatusBar, BorderLayout.SOUTH);
         panelStatusBar.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 
         JSeparator separator_2 = new JSeparator();
@@ -293,7 +349,7 @@ public class App extends JFrame {
         JSplitPane splitPane = new JSplitPane();
         splitPane.setResizeWeight(0.8);
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        panelMain.add(splitPane, BorderLayout.CENTER);
+        contentPane.add(splitPane, BorderLayout.CENTER);
 
         epConsole = new JTextArea();
         epConsole.setTabSize(4);
@@ -303,6 +359,7 @@ public class App extends JFrame {
         textArea = new JTextArea();
         textArea.setTabSize(4);
         textArea.setFont(new Font("Consolas", Font.PLAIN, 14));
+        // textArea.setFocusTraversalKeysEnabled(false);
         textArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -322,11 +379,9 @@ public class App extends JFrame {
         JScrollPane scrollPane = new JScrollPane(textArea);
         splitPane.setLeftComponent(scrollPane);
 
-        TextLineNumber tln = new TextLineNumber(textArea);
-        scrollPane.setRowHeaderView(tln);
-        scrollPane.setViewportView(textArea);
-
-        setVisible(true);
+//		TextLineNumber tln = new TextLineNumber(textArea);
+//		scrollPane.setRowHeaderView(tln);
+//		scrollPane.setViewportView(textArea);
     }
 
     /**********************************************************************************************************************************
@@ -334,8 +389,11 @@ public class App extends JFrame {
      *********************************************************************************************************************************/
 
     public void fNew() {
-        if (cancelSaveFileOp()) return;
-
+        if (!savedFile) {
+            if (!verifySaveFile()) {
+                return;
+            }
+        }
         file = new FileTTO();
         textArea.setText("");
         resetControlVars();
@@ -344,11 +402,14 @@ public class App extends JFrame {
     }
 
     public void fOpen() {
-        if (cancelSaveFileOp()) return;
-
+        if (!savedFile) {
+            if (!verifySaveFile()) {
+                return;
+            }
+        }
         var fullPath = getFilePath(false);
-        if (fullPath.equals("")) return;
-
+        if (fullPath.equals(""))
+            return;
         file = new FileTTO(fullPath);
         resetControlVars();
         setTitle("Compiler - " + file.getName());
@@ -368,21 +429,14 @@ public class App extends JFrame {
 
     public boolean fSaveAs() {
         var fullPath = getFilePath(true);
-        if (fullPath.equals("")) return false;
+        if (fullPath.equals(""))
+            return false;
 
         file = new FileTTO(fullPath);
         resetFileVars();
         setTitle("Compiler - " + file.getName());
         file.save(textArea.getText());
         return true;
-    }
-
-    public void fExit() {
-        if (savedFile) {
-            System.exit(0);
-        } else if (verifySaveFile()) {
-            System.exit(0);
-        }
     }
 
     public void fCut() {
@@ -453,7 +507,7 @@ public class App extends JFrame {
 
         // JOptionPane.showInternalMessageDialog(null, caretPos);
 
-        for (int offset = caretPos; offset > 0; ) {
+        for (int offset = caretPos; offset > 0;) {
             try {
                 offset = Utilities.getRowStart(textArea, offset) - 1;
             } catch (BadLocationException e1) {
@@ -510,15 +564,6 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean cancelSaveFileOp() {
-        if (!savedFile) {
-            if (!verifySaveFile()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public String getFilePath(boolean save) {
         var fullPath = "";
         var optionString = save ? "save" : "open";
@@ -572,4 +617,5 @@ public class App extends JFrame {
 
         return fullPath;
     }
+
 }
