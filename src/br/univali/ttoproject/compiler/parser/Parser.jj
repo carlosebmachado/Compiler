@@ -79,12 +79,12 @@ TOKEN :
 /* IDENTIFIERS */
 TOKEN : 
 {
-  < IDENTIFIER: <LETTER> (<LETTER>|<UNSIGNED>)+ >
-|   <LETTER: ["_","a"-"z","A"-"Z"] >
+    <IDENTIFIER: <LETTER> (<LETTER>|<UNSIGNED>)+>
+|   <LETTER: ["_","a"-"z","A"-"Z"]>
 |   <UNSIGNED: (["0" - "9"])+ >
-|   <SIGNED: ("-")? (["0" - "9"])+ >
-|   <REAL_UNSIGNED: <UNSIGNED>"."<UNSIGNED> >
-|   <REAL_SIGNED: <SIGNED>"."<UNSIGNED> >
+|   <SIGNED: ("-")? (["0" - "9"])+>
+|   <REAL_UNSIGNED: <UNSIGNED>"."<UNSIGNED>>
+|   <REAL_SIGNED: <SIGNED>"."<UNSIGNED>>
 //|   <VALUE: (<LETTER>|<SIGNED>)+ >
 //|   <NOT_VARIABLE: (<NATURAL>|<REAL>|<CHAR>|<BOOLEAN>) <IDENTIFIER> <VALUE> >
 }

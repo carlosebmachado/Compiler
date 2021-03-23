@@ -49,6 +49,9 @@ import java.awt.Font;
 import java.awt.Toolkit;
 
 public class App extends JFrame {
+	
+	// TODO: Corrigir erro na hr se salvar, se fechar o jfilechooser o programa fecha
+	// TODO: Corrigir bug do console
 
 	private static final long serialVersionUID = 5107264097912675169L;
 
