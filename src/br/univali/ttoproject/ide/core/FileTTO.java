@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -28,7 +29,7 @@ public class FileTTO {
         name = slice[slice.length-1];
         path = "";
         for (int i = 0; i < slice.length-1; i++) {
-            path += slice[i] + "\\";
+            path = MessageFormat.format("{0}{1}\\", path, slice[i]);
         }
     }
 
@@ -66,6 +67,7 @@ public class FileTTO {
         }
         try {
             StringBuilder sb = new StringBuilder();
+            assert br != null;
             String line = br.readLine();
 
             while (line != null) {
@@ -78,6 +80,7 @@ public class FileTTO {
             e.printStackTrace();
         } finally {
             try {
+                assert br != null;
                 br.close();
             } catch (IOException e) {
                 e.printStackTrace();

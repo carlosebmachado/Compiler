@@ -6,8 +6,6 @@ import br.univali.ttoproject.ide.components.TextLineNumber;
 import br.univali.ttoproject.ide.core.FileTTO;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Utilities;
@@ -20,9 +18,9 @@ public class App extends JFrame {
 
     private JPanel panelMain;
 
-    private JTextArea textArea;
-    private JTextArea epConsole;
-    private JLabel lblLnCol;
+    private final JTextArea taEdit;
+    private final JTextArea taConsole;
+    private final JLabel lblLnCol;
 
     private FileTTO file;
 
@@ -32,21 +30,25 @@ public class App extends JFrame {
     private boolean compiled = false;
     private boolean running = false;
 
+    private boolean allowConsoleInput = false;
+    private int allowedCaretPosition;
+
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException |
+                InstantiationException |
+                IllegalAccessException |
+                UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    new App();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        EventQueue.invokeLater(() -> {
+            try {
+                new App();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -78,75 +80,43 @@ public class App extends JFrame {
         menuBar.add(mnFile);
 
         JMenuItem mntmNew = new JMenuItem("New");
-        mntmNew.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fNew();
-            }
-        });
+        mntmNew.addActionListener(e -> fNew());
         mntmNew.setIcon(new ImageIcon(App.class.getResource("/img/New File.png")));
         mnFile.add(mntmNew);
 
         JMenuItem mntmOpen = new JMenuItem("Open");
-        mntmOpen.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fOpen();
-            }
-        });
+        mntmOpen.addActionListener(e -> fOpen());
         mntmOpen.setIcon(new ImageIcon(App.class.getResource("/img/Open Project.png")));
         mnFile.add(mntmOpen);
 
         JMenuItem mntmSave = new JMenuItem("Save");
-        mntmSave.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fSave();
-            }
-        });
+        mntmSave.addActionListener(e -> fSave());
         mntmSave.setIcon(new ImageIcon(App.class.getResource("/img/Save File.png")));
         mnFile.add(mntmSave);
 
         JMenuItem mntmSaveAs = new JMenuItem("Save as...");
-        mntmSaveAs.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fSaveAs();
-            }
-        });
+        mntmSaveAs.addActionListener(e -> fSaveAs());
         mnFile.add(mntmSaveAs);
 
         JMenuItem mntmExit = new JMenuItem("Exit");
-        mntmExit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fExit();
-            }
-        });
+        mntmExit.addActionListener(e -> fExit());
         mnFile.add(mntmExit);
 
         JMenu mnEdit = new JMenu("Edit");
         menuBar.add(mnEdit);
 
         JMenuItem mntmCut = new JMenuItem("Cut");
-        mntmCut.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fCut();
-            }
-        });
+        mntmCut.addActionListener(e -> fCut());
         mntmCut.setIcon(new ImageIcon(App.class.getResource("/img/Cut.PNG")));
         mnEdit.add(mntmCut);
 
         JMenuItem mntmCopy = new JMenuItem("Copy");
-        mntmCopy.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fCopy();
-            }
-        });
+        mntmCopy.addActionListener(e -> fCopy());
         mntmCopy.setIcon(new ImageIcon(App.class.getResource("/img/Copy.PNG")));
         mnEdit.add(mntmCopy);
 
         JMenuItem mntmPaste = new JMenuItem("Paste");
-        mntmPaste.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fPaste();
-            }
-        });
+        mntmPaste.addActionListener(e -> fPaste());
         mntmPaste.setIcon(new ImageIcon(App.class.getResource("/img/Paste.png")));
         mnEdit.add(mntmPaste);
 
@@ -154,20 +124,12 @@ public class App extends JFrame {
         menuBar.add(mnBuild);
 
         JMenuItem mntmCompile = new JMenuItem("Compile");
-        mntmCompile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fCompile();
-            }
-        });
+        mntmCompile.addActionListener(e -> fCompile());
         mntmCompile.setIcon(new ImageIcon(App.class.getResource("/img/Cog.png")));
         mnBuild.add(mntmCompile);
 
         JMenuItem mntmRun = new JMenuItem("Run");
-        mntmRun.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fRun();
-            }
-        });
+        mntmRun.addActionListener(e -> fRun());
         mntmRun.setIcon(new ImageIcon(App.class.getResource("/img/Run .PNG")));
         mnBuild.add(mntmRun);
 
@@ -175,19 +137,11 @@ public class App extends JFrame {
         menuBar.add(mnAbout);
 
         JMenuItem mntmNewMenuItem = new JMenuItem("Show help");
-        mntmNewMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fHelp();
-            }
-        });
+        mntmNewMenuItem.addActionListener(e -> fHelp());
         mnAbout.add(mntmNewMenuItem);
 
         JMenuItem mntmNewMenuItem_1 = new JMenuItem("About");
-        mntmNewMenuItem_1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fAbout();
-            }
-        });
+        mntmNewMenuItem_1.addActionListener(e -> fAbout());
         mnAbout.add(mntmNewMenuItem_1);
 
 
@@ -195,29 +149,17 @@ public class App extends JFrame {
         panelMain.add(toolBar, BorderLayout.NORTH);
 
         JButton btnNew = new JButton("");
-        btnNew.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fNew();
-            }
-        });
+        btnNew.addActionListener(e -> fNew());
         btnNew.setIcon(new ImageIcon(App.class.getResource("/img/New File.png")));
         toolBar.add(btnNew);
 
         JButton btnOpen = new JButton("");
-        btnOpen.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fOpen();
-            }
-        });
+        btnOpen.addActionListener(e -> fOpen());
         btnOpen.setIcon(new ImageIcon(App.class.getResource("/img/Open Project.png")));
         toolBar.add(btnOpen);
 
         JButton btnSave = new JButton("");
-        btnSave.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fSave();
-            }
-        });
+        btnSave.addActionListener(e -> fSave());
         btnSave.setIcon(new ImageIcon(App.class.getResource("/img/Save File.png")));
         toolBar.add(btnSave);
 
@@ -227,29 +169,17 @@ public class App extends JFrame {
         toolBar.add(separator);
 
         JButton btnCut = new JButton("");
-        btnCut.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fCut();
-            }
-        });
+        btnCut.addActionListener(e -> fCut());
         btnCut.setIcon(new ImageIcon(App.class.getResource("/img/Cut.PNG")));
         toolBar.add(btnCut);
 
         JButton btnCopy = new JButton("");
-        btnCopy.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fCopy();
-            }
-        });
+        btnCopy.addActionListener(e -> fCopy());
         btnCopy.setIcon(new ImageIcon(App.class.getResource("/img/Copy.PNG")));
         toolBar.add(btnCopy);
 
         JButton btnPaste = new JButton("");
-        btnPaste.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fPaste();
-            }
-        });
+        btnPaste.addActionListener(e -> fPaste());
         btnPaste.setIcon(new ImageIcon(App.class.getResource("/img/Paste.png")));
         toolBar.add(btnPaste);
 
@@ -259,20 +189,12 @@ public class App extends JFrame {
         toolBar.add(separator_1);
 
         JButton btnBuild = new JButton("");
-        btnBuild.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fCompile();
-            }
-        });
+        btnBuild.addActionListener(e -> fCompile());
         btnBuild.setIcon(new ImageIcon(App.class.getResource("/img/Cog.png")));
         toolBar.add(btnBuild);
 
         JButton btnRun = new JButton("");
-        btnRun.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fRun();
-            }
-        });
+        btnRun.addActionListener(e -> fRun());
         btnRun.setIcon(new ImageIcon(App.class.getResource("/img/Run .PNG")));
         toolBar.add(btnRun);
 
@@ -295,49 +217,53 @@ public class App extends JFrame {
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         panelMain.add(splitPane, BorderLayout.CENTER);
 
-        epConsole = new JTextArea();
-        epConsole.setTabSize(4);
-        JScrollPane scrollPaneConsole = new JScrollPane(epConsole);
+        taConsole = new JTextArea();
+        taConsole.setTabSize(4);
+        taConsole.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                cHandleKey(e);
+                //e.consume();
+            }
+            @Override
+            public void keyTyped(KeyEvent e) {
+                cHandleKey(e);
+                //e.consume();
+            }
+        });
+        JScrollPane scrollPaneConsole = new JScrollPane(taConsole);
         splitPane.setRightComponent(scrollPaneConsole);
 
-        textArea = new JTextArea();
-        textArea.setTabSize(4);
-        textArea.setFont(new Font("Consolas", Font.PLAIN, 14));
-        textArea.addKeyListener(new KeyAdapter() {
+        taEdit = new JTextArea();
+        taEdit.setTabSize(4);
+        taEdit.setFont(new Font("Consolas", Font.PLAIN, 14));
+        taEdit.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 updateFile();
             }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-            }
         });
-        textArea.addCaretListener(new CaretListener() {
-            public void caretUpdate(CaretEvent e) {
-                updateLCLabel();
-            }
-        });
+        taEdit.addCaretListener(e -> updateLCLabel());
 
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JScrollPane scrollPane = new JScrollPane(taEdit);
         splitPane.setLeftComponent(scrollPane);
 
-        TextLineNumber tln = new TextLineNumber(textArea);
+        TextLineNumber tln = new TextLineNumber(taEdit);
         scrollPane.setRowHeaderView(tln);
-        scrollPane.setViewportView(textArea);
+        scrollPane.setViewportView(taEdit);
 
         setVisible(true);
     }
 
-    /**********************************************************************************************************************************
+    /*******************************************************************************************************************
      * Actions
-     *********************************************************************************************************************************/
+     ******************************************************************************************************************/
 
     public void fNew() {
         if (cancelSaveFileOp()) return;
 
         file = new FileTTO();
-        textArea.setText("");
+        taEdit.setText("");
         resetControlVars();
         newFile = true;
         setTitle("Compiler");
@@ -352,7 +278,7 @@ public class App extends JFrame {
         file = new FileTTO(fullPath);
         resetControlVars();
         setTitle("Compiler - " + file.getName());
-        textArea.setText(file.load());
+        taEdit.setText(file.load());
     }
 
     public boolean fSave() {
@@ -361,7 +287,7 @@ public class App extends JFrame {
         } else if (!savedFile) {
             resetFileVars();
             setTitle(getTitle().substring(0, getTitle().length() - 2));
-            file.save(textArea.getText());
+            file.save(taEdit.getText());
         }
         return true;
     }
@@ -373,7 +299,7 @@ public class App extends JFrame {
         file = new FileTTO(fullPath);
         resetFileVars();
         setTitle("Compiler - " + file.getName());
-        file.save(textArea.getText());
+        file.save(taEdit.getText());
         return true;
     }
 
@@ -386,76 +312,106 @@ public class App extends JFrame {
     }
 
     public void fCut() {
-        textArea.cut();
+        taEdit.cut();
     }
 
     public void fCopy() {
-        textArea.copy();
+        taEdit.copy();
     }
 
     public void fPaste() {
-        textArea.paste();
+        taEdit.paste();
     }
 
     public void fCompile() {
-        if (textArea.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Your file is empty.", "Warning", JOptionPane.OK_OPTION);
+        if (taEdit.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Your file is empty.",
+                    "Warning",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        if (!fSave()) return;
+
         compiled = true;
-        epConsole.setText(new Compiler().build(new StringReader(textArea.getText())));
+        taConsole.setText(new Compiler().build(new StringReader(taEdit.getText())));
+
+        // test
+//        cAddContent("\nDigite: ");
+//        allowConsoleInput = true;
+//        allowedCaretPosition = taConsole.getCaretPosition();
     }
 
     public void fRun() {
         if (!compiled) {
-            JOptionPane.showMessageDialog(null, "Please, compile your file before running.", "Warning",
-                    JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Please, compile your file before running.",
+                    "Warning",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
         running = true;
     }
 
     public void fAbout() {
-        JOptionPane.showMessageDialog(null, "Authors: Carlos E. B. Machado and Herikc Brecher.", "About",
+        JOptionPane.showMessageDialog(
+                null,
+                "Authors: Carlos E. B. Machado, Herikc Brecher and Bruno.",
+                "About",
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void fHelp() {
-//		String text = "<html>"
-//				    + "╔═ File <br/>"
-//					+ "║    ╠═ New: Create a new 2021.1 file. <br/>"
-//					+ "║    ╠═ Open: Open a 2021.1 file. <br/>"
-//					+ "║    ╠═ Save: <br/>"
-//					+ "║    ╠═ Save as: <br/>"
-//					+ "║    ╚═ Exit: <br/>"
-//				    + "╠═ Edit <br/>"
-//					+ "║    ╠═ Cut: <br/>"
-//					+ "║    ╠═ Copy: <br/>"
-//					+ "║    ╚═ Paste: <br/>"
-//				    + "╠═ Build <br/>"
-//					+ "║    ╠═ Compile: <br/>"
-//					+ "║    ╚═ Run: <br/>"
-//					+ "</html>";
-//		var label = new JLabel(text);
-//		label.setFont(new Font("Consolas", Font.PLAIN, 11));
-//		JOptionPane.showMessageDialog(null, label, "Help", JOptionPane.QUESTION_MESSAGE);
         new ShowHelp();
     }
 
-    /**********************************************************************************************************************************
+    /*******************************************************************************************************************
      * UI controls
-     *********************************************************************************************************************************/
+     ******************************************************************************************************************/
+
+    private void cHandleKey(KeyEvent e) {
+        if (allowConsoleInput) {
+            cUserInput(e);
+        } else {
+            e.consume();
+        }
+    }
+
+    private void cReset() {
+        taConsole.setText("");
+    }
+
+    private void cAddContent(String content) {
+        taConsole.setText(taConsole.getText() + content);
+    }
+
+    private void cUserInput(KeyEvent e) {
+        //taConsole.grabFocus();
+        taConsole.requestFocusInWindow();
+
+        var curCaretPosition = taConsole.getCaretPosition();
+
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            allowConsoleInput = false;
+        } else if (allowedCaretPosition != curCaretPosition){
+            e.consume();
+        } else {
+            allowedCaretPosition++;
+        }
+
+    }
 
     private void updateLCLabel() {
-        int caretPos = textArea.getCaretPosition();
+        int caretPos = taEdit.getCaretPosition();
         int rows = caretPos == 0 ? 1 : 0;
-        int cols = 0;
-
-        // JOptionPane.showInternalMessageDialog(null, caretPos);
+        int cols;
 
         for (int offset = caretPos; offset > 0; ) {
             try {
-                offset = Utilities.getRowStart(textArea, offset) - 1;
+                offset = Utilities.getRowStart(taEdit, offset) - 1;
             } catch (BadLocationException e1) {
                 e1.printStackTrace();
             }
@@ -464,7 +420,7 @@ public class App extends JFrame {
 
         int offset = 0;
         try {
-            offset = Utilities.getRowStart(textArea, caretPos);
+            offset = Utilities.getRowStart(taEdit, caretPos);
         } catch (BadLocationException e1) {
             e1.printStackTrace();
         }
@@ -480,9 +436,9 @@ public class App extends JFrame {
         savedFile = false;
     }
 
-    /**********************************************************************************************************************************
+    /*******************************************************************************************************************
      * Auxiliary functions
-     *********************************************************************************************************************************/
+     ******************************************************************************************************************/
 
     public void resetControlVars() {
         resetFileVars();
@@ -496,25 +452,20 @@ public class App extends JFrame {
     }
 
     public boolean verifySaveFile() {
-        int result = JOptionPane.showConfirmDialog(null, "Would you like to save the file?", "Save",
+        int result = JOptionPane.showConfirmDialog(
+                null,
+                "Would you like to save the file?",
+                "Save",
                 JOptionPane.YES_NO_CANCEL_OPTION);
         if (result == JOptionPane.YES_OPTION) {
             return fSave();
         }
-        if (result == JOptionPane.NO_OPTION) {
-
-        }
-        if (result == JOptionPane.CANCEL_OPTION) {
-            return false;
-        }
-        return true;
+        return result != JOptionPane.CANCEL_OPTION;
     }
 
     public boolean cancelSaveFileOp() {
         if (!savedFile) {
-            if (!verifySaveFile()) {
-                return true;
-            }
+            return !verifySaveFile();
         }
         return false;
     }
@@ -529,7 +480,7 @@ public class App extends JFrame {
             fileChooser.setSelectedFile(new File(file.getName()));
         }
 
-        int userSelection = 0;
+        int userSelection;
         boolean existisVerDone = false;
 
         do {
@@ -543,14 +494,13 @@ public class App extends JFrame {
                 File fileToSave = fileChooser.getSelectedFile();
                 if (save) {
                     if (fileToSave.exists()) {
-                        int result = JOptionPane.showConfirmDialog(null,
-                                "A file with that name already exists. Would you like to overwrite?", "Overwrite",
+                        int result = JOptionPane.showConfirmDialog(
+                                null,
+                                "A file with that name already exists. Would you like to overwrite?",
+                                "Overwrite",
                                 JOptionPane.YES_NO_OPTION);
                         if (result == JOptionPane.YES_OPTION) {
                             existisVerDone = true;
-                        }
-                        if (result == JOptionPane.NO_OPTION) {
-
                         }
                     } else {
                         existisVerDone = true;
@@ -564,7 +514,7 @@ public class App extends JFrame {
             }
         } while (!existisVerDone);
 
-        if (fullPath.length() >= 4 && !fullPath.substring(fullPath.length() - 4).equals(".tto")) {
+        if (fullPath.length() >= 4 && !fullPath.endsWith(".tto")) {
             fullPath += ".tto";
         } else if (fullPath.length() < 4) {
             fullPath += ".tto";

@@ -7,7 +7,7 @@ Create folders 'C:\javacc\target\' and 'C:\javacc\scripts\'
 
 Copy 'javacc.jar' to 'C:\javacc\target\'
 
-Add the folder 'C:\javacc\scripts\' to PATH as 'scripts'
+Add the folder 'C:\javacc\scripts\' to PATH
 
 Usage:
 Go to JJ file directory on terminal
