@@ -11,8 +11,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Utilities;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.StringReader;
+import java.io.*;
+import java.util.Scanner;
 
 public class App extends JFrame {
 
@@ -32,6 +32,7 @@ public class App extends JFrame {
 
     private boolean allowConsoleInput = false;
     private int allowedCaretPosition;
+    private int initialCaretPosition;
 
     public static void main(String[] args) {
         try {
@@ -219,16 +220,11 @@ public class App extends JFrame {
 
         taConsole = new JTextArea();
         taConsole.setTabSize(4);
+        taConsole.setFocusTraversalKeysEnabled(false);
         taConsole.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                cHandleKey(e);
-                //e.consume();
-            }
-            @Override
             public void keyTyped(KeyEvent e) {
-                cHandleKey(e);
-                //e.consume();
+                //cHandleKey(e);
             }
         });
         JScrollPane scrollPaneConsole = new JScrollPane(taConsole);
@@ -293,13 +289,15 @@ public class App extends JFrame {
     }
 
     public boolean fSaveAs() {
-        var fullPath = getFilePath(true);
-        if (fullPath.equals("")) return false;
+        if (!savedFile) {
+            var fullPath = getFilePath(true);
+            if (fullPath.equals("")) return false;
 
-        file = new FileTTO(fullPath);
-        resetFileVars();
-        setTitle("Compiler - " + file.getName());
-        file.save(taEdit.getText());
+            file = new FileTTO(fullPath);
+            resetFileVars();
+            setTitle("Compiler - " + file.getName());
+            file.save(taEdit.getText());
+        }
         return true;
     }
 
@@ -339,9 +337,8 @@ public class App extends JFrame {
         taConsole.setText(new Compiler().build(new StringReader(taEdit.getText())));
 
         // test
-//        cAddContent("\nDigite: ");
-//        allowConsoleInput = true;
-//        allowedCaretPosition = taConsole.getCaretPosition();
+        cAddContent("\nDigite: ");
+        cInit();
     }
 
     public void fRun() {
@@ -371,13 +368,22 @@ public class App extends JFrame {
     /*******************************************************************************************************************
      * UI controls
      ******************************************************************************************************************/
-
     private void cHandleKey(KeyEvent e) {
         if (allowConsoleInput) {
             cUserInput(e);
         } else {
             e.consume();
         }
+    }
+
+    private void cInit(){
+        allowConsoleInput = true;
+        allowedCaretPosition = taConsole.getCaretPosition();
+        initialCaretPosition = allowedCaretPosition;
+    }
+
+    private void cStop(){
+        allowConsoleInput = false;
     }
 
     private void cReset() {
@@ -389,19 +395,44 @@ public class App extends JFrame {
     }
 
     private void cUserInput(KeyEvent e) {
-        //taConsole.grabFocus();
         taConsole.requestFocusInWindow();
 
+        var keyChar = e.getKeyChar();
         var curCaretPosition = taConsole.getCaretPosition();
 
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            allowConsoleInput = false;
-        } else if (allowedCaretPosition != curCaretPosition){
+        System.out.println("Allowed: " + allowedCaretPosition);
+        System.out.println("Initial: " + initialCaretPosition);
+        System.out.println("Current: " + curCaretPosition);
+        System.out.println();
+
+        if (keyChar == '\b'){
+            if (curCaretPosition >= initialCaretPosition){
+                allowedCaretPosition--;
+            } else {
+                e.consume();
+            }
+            return;
+        }
+        if (keyChar == '\n'){
+            cStop();
+            return;
+        }
+        if (keyChar == '\t'){
+            e.consume();
+            return;
+        }
+
+        //System.out.println("Allowed: " + allowedCaretPosition);
+        //System.out.println("Current: " + curCaretPosition);
+        //System.out.println();
+
+        //System.out.println("KeyCode: " + e.getKeyChar());
+
+        if (allowedCaretPosition != curCaretPosition) {
             e.consume();
         } else {
             allowedCaretPosition++;
         }
-
     }
 
     private void updateLCLabel() {
