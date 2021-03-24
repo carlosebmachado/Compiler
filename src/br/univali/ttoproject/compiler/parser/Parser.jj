@@ -16,14 +16,22 @@ PARSER_END(Parser)
 
 SKIP :
 {
-  " "
-| "\t"
-| "\n"
-| "\r"
+  <" ">
+| <"\t">
+| <"\n">
+| <"\r">
+|< ":-" (~["\r", "\n"])* >
+| < "/*" > : BLOCK_COMMENT_STATE
+}
+
+<BLOCK_COMMENT_STATE> SKIP :
+{
+  < "*/" > : DEFAULT
+| < ~[] >
 }
 
 /* KEY WORDS */
-TOKEN :
+TOKEN [IGNORE_CASE]:
 {
   <PROGRAM: "program">
 | <DEFINE: "define">
@@ -50,8 +58,7 @@ TOKEN :
 /* SPECIAL SYMBOLS */
 TOKEN :
 {
-  <LINE_COMMENT: ":-">
-| <LBRACE: "{">
+  <LBRACE: "{">
 | <RBRACE: "}">
 | <PARENTHESESL: "(">
 | <PARANTHESESR: ")">
@@ -86,6 +93,11 @@ TOKEN :
 |   <REAL_SIGNED: <SIGNED>"."<UNSIGNED>>
 //|   <VALUE: (<LETTER>|<SIGNED>)+ >
 //|   <NOT_VARIABLE: (<NATURAL>|<REAL>|<CHAR>|<BOOLEAN>) <IDENTIFIER> <VALUE> >
+}
+
+/* LITERALS */
+TOKEN : {
+    <STRING : ("'"  (~["\n","\r"])*  "'") | ("\""  (~["\n","\r"])*  "\"")>
 }
 
 <*> TOKEN : { <UNKNOWN: ~[]> }
