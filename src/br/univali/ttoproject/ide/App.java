@@ -1,9 +1,8 @@
 package br.univali.ttoproject.ide;
 
 import br.univali.ttoproject.compiler.Compiler;
-import br.univali.ttoproject.ide.components.ShowHelp;
-import br.univali.ttoproject.ide.components.TextLineNumber;
-import br.univali.ttoproject.ide.core.FileTTO;
+import br.univali.ttoproject.ide.components.*;
+import br.univali.ttoproject.ide.components.MenuBar;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -12,7 +11,8 @@ import javax.swing.text.Utilities;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Scanner;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class App extends JFrame {
 
@@ -74,144 +74,21 @@ public class App extends JFrame {
         });
 
         // Components
-        JMenuBar menuBar = new JMenuBar();
-        setJMenuBar(menuBar);
 
-        JMenu mnFile = new JMenu("File");
-        menuBar.add(mnFile);
+        // menu methods
+        Consumer[] menuConsumers = { o -> fNew(), o -> fOpen(), o -> fExit(), o -> fCut(), o -> fCopy(),
+                                     o -> fPaste(), o -> fCompile(), o -> fRun(), o -> fAbout(), o -> fHelp() };
+        Supplier[] menuSuppliers = { this::fSave, this::fSaveAs };
 
-        JMenuItem mntmNew = new JMenuItem("New");
-        mntmNew.addActionListener(e -> fNew());
-        mntmNew.setIcon(new ImageIcon(App.class.getResource("/img/New File.png")));
-        mnFile.add(mntmNew);
-
-        JMenuItem mntmOpen = new JMenuItem("Open");
-        mntmOpen.addActionListener(e -> fOpen());
-        mntmOpen.setIcon(new ImageIcon(App.class.getResource("/img/Open Project.png")));
-        mnFile.add(mntmOpen);
-
-        JMenuItem mntmSave = new JMenuItem("Save");
-        mntmSave.addActionListener(e -> fSave());
-        mntmSave.setIcon(new ImageIcon(App.class.getResource("/img/Save File.png")));
-        mnFile.add(mntmSave);
-
-        JMenuItem mntmSaveAs = new JMenuItem("Save as...");
-        mntmSaveAs.addActionListener(e -> fSaveAs());
-        mnFile.add(mntmSaveAs);
-
-        JMenuItem mntmExit = new JMenuItem("Exit");
-        mntmExit.addActionListener(e -> fExit());
-        mnFile.add(mntmExit);
-
-        JMenu mnEdit = new JMenu("Edit");
-        menuBar.add(mnEdit);
-
-        JMenuItem mntmCut = new JMenuItem("Cut");
-        mntmCut.addActionListener(e -> fCut());
-        mntmCut.setIcon(new ImageIcon(App.class.getResource("/img/Cut.PNG")));
-        mnEdit.add(mntmCut);
-
-        JMenuItem mntmCopy = new JMenuItem("Copy");
-        mntmCopy.addActionListener(e -> fCopy());
-        mntmCopy.setIcon(new ImageIcon(App.class.getResource("/img/Copy.PNG")));
-        mnEdit.add(mntmCopy);
-
-        JMenuItem mntmPaste = new JMenuItem("Paste");
-        mntmPaste.addActionListener(e -> fPaste());
-        mntmPaste.setIcon(new ImageIcon(App.class.getResource("/img/Paste.png")));
-        mnEdit.add(mntmPaste);
-
-        JMenu mnBuild = new JMenu("Build");
-        menuBar.add(mnBuild);
-
-        JMenuItem mntmCompile = new JMenuItem("Compile");
-        mntmCompile.addActionListener(e -> fCompile());
-        mntmCompile.setIcon(new ImageIcon(App.class.getResource("/img/Cog.png")));
-        mnBuild.add(mntmCompile);
-
-        JMenuItem mntmRun = new JMenuItem("Run");
-        mntmRun.addActionListener(e -> fRun());
-        mntmRun.setIcon(new ImageIcon(App.class.getResource("/img/Run .PNG")));
-        mnBuild.add(mntmRun);
-
-        JMenu mnAbout = new JMenu("Help");
-        menuBar.add(mnAbout);
-
-        JMenuItem mntmNewMenuItem = new JMenuItem("Show help");
-        mntmNewMenuItem.addActionListener(e -> fHelp());
-        mnAbout.add(mntmNewMenuItem);
-
-        JMenuItem mntmNewMenuItem_1 = new JMenuItem("About");
-        mntmNewMenuItem_1.addActionListener(e -> fAbout());
-        mnAbout.add(mntmNewMenuItem_1);
-
-
-        JToolBar toolBar = new JToolBar();
-        panelMain.add(toolBar, BorderLayout.NORTH);
-
-        JButton btnNew = new JButton("");
-        btnNew.addActionListener(e -> fNew());
-        btnNew.setIcon(new ImageIcon(App.class.getResource("/img/New File.png")));
-        toolBar.add(btnNew);
-
-        JButton btnOpen = new JButton("");
-        btnOpen.addActionListener(e -> fOpen());
-        btnOpen.setIcon(new ImageIcon(App.class.getResource("/img/Open Project.png")));
-        toolBar.add(btnOpen);
-
-        JButton btnSave = new JButton("");
-        btnSave.addActionListener(e -> fSave());
-        btnSave.setIcon(new ImageIcon(App.class.getResource("/img/Save File.png")));
-        toolBar.add(btnSave);
-
-        JSeparator separator = new JSeparator();
-        separator.setMaximumSize(new Dimension(4, 32767));
-        separator.setOrientation(SwingConstants.VERTICAL);
-        toolBar.add(separator);
-
-        JButton btnCut = new JButton("");
-        btnCut.addActionListener(e -> fCut());
-        btnCut.setIcon(new ImageIcon(App.class.getResource("/img/Cut.PNG")));
-        toolBar.add(btnCut);
-
-        JButton btnCopy = new JButton("");
-        btnCopy.addActionListener(e -> fCopy());
-        btnCopy.setIcon(new ImageIcon(App.class.getResource("/img/Copy.PNG")));
-        toolBar.add(btnCopy);
-
-        JButton btnPaste = new JButton("");
-        btnPaste.addActionListener(e -> fPaste());
-        btnPaste.setIcon(new ImageIcon(App.class.getResource("/img/Paste.png")));
-        toolBar.add(btnPaste);
-
-        JSeparator separator_1 = new JSeparator();
-        separator_1.setOrientation(SwingConstants.VERTICAL);
-        separator_1.setMaximumSize(new Dimension(4, 32767));
-        toolBar.add(separator_1);
-
-        JButton btnBuild = new JButton("");
-        btnBuild.addActionListener(e -> fCompile());
-        btnBuild.setIcon(new ImageIcon(App.class.getResource("/img/Cog.png")));
-        toolBar.add(btnBuild);
-
-        JButton btnRun = new JButton("");
-        btnRun.addActionListener(e -> fRun());
-        btnRun.setIcon(new ImageIcon(App.class.getResource("/img/Run .PNG")));
-        toolBar.add(btnRun);
-
-        JPanel panelStatusBar = new JPanel();
-        panelStatusBar.setMinimumSize(new Dimension(10, 16));
-        panelMain.add(panelStatusBar, BorderLayout.SOUTH);
-        panelStatusBar.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-
-        JSeparator separator_2 = new JSeparator();
-        separator_2.setPreferredSize(new Dimension(5, 14));
-        separator_2.setMaximumSize(new Dimension(5, 32767));
-        separator_2.setOrientation(SwingConstants.VERTICAL);
-        panelStatusBar.add(separator_2);
-
+        // menu bar
+        setJMenuBar(new MenuBar(menuConsumers, menuSuppliers));
+        // tool bar
+        add(new ToolBar(menuConsumers, menuSuppliers), BorderLayout.NORTH);
+        // status bar
+        var statusBar = new StatusBar();
         lblLnCol = new JLabel("Ln 1, Col 1");
-        panelStatusBar.add(lblLnCol);
+        statusBar.add(lblLnCol);
+        panelMain.add(statusBar, BorderLayout.SOUTH);
 
         JSplitPane splitPane = new JSplitPane();
         splitPane.setResizeWeight(0.8);
@@ -224,11 +101,11 @@ public class App extends JFrame {
         taConsole.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                //cHandleKey(e);
+                cHandleKey(e);
             }
         });
-        JScrollPane scrollPaneConsole = new JScrollPane(taConsole);
-        splitPane.setRightComponent(scrollPaneConsole);
+        JScrollPane scpConsole = new JScrollPane(taConsole);
+        splitPane.setRightComponent(scpConsole);
 
         taEdit = new JTextArea();
         taEdit.setTabSize(4);
@@ -241,12 +118,12 @@ public class App extends JFrame {
         });
         taEdit.addCaretListener(e -> updateLCLabel());
 
-        JScrollPane scrollPane = new JScrollPane(taEdit);
-        splitPane.setLeftComponent(scrollPane);
+        JScrollPane scpEdit = new JScrollPane(taEdit);
+        splitPane.setLeftComponent(scpEdit);
 
         TextLineNumber tln = new TextLineNumber(taEdit);
-        scrollPane.setRowHeaderView(tln);
-        scrollPane.setViewportView(taEdit);
+        scpEdit.setRowHeaderView(tln);
+        scpEdit.setViewportView(taEdit);
 
         setVisible(true);
     }
@@ -337,8 +214,8 @@ public class App extends JFrame {
         taConsole.setText(new Compiler().build(new StringReader(taEdit.getText())));
 
         // test
-        cAddContent("\nDigite: ");
-        cInit();
+//        cAddContent("\nDigite: ");
+//        cInit();
     }
 
     public void fRun() {
@@ -400,13 +277,8 @@ public class App extends JFrame {
         var keyChar = e.getKeyChar();
         var curCaretPosition = taConsole.getCaretPosition();
 
-        System.out.println("Allowed: " + allowedCaretPosition);
-        System.out.println("Initial: " + initialCaretPosition);
-        System.out.println("Current: " + curCaretPosition);
-        System.out.println();
-
         if (keyChar == '\b'){
-            if (curCaretPosition >= initialCaretPosition){
+            if (curCaretPosition > initialCaretPosition){
                 allowedCaretPosition--;
             } else {
                 e.consume();
@@ -421,12 +293,6 @@ public class App extends JFrame {
             e.consume();
             return;
         }
-
-        //System.out.println("Allowed: " + allowedCaretPosition);
-        //System.out.println("Current: " + curCaretPosition);
-        //System.out.println();
-
-        //System.out.println("KeyCode: " + e.getKeyChar());
 
         if (allowedCaretPosition != curCaretPosition) {
             e.consume();

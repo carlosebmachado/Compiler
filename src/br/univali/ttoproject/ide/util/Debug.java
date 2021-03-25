@@ -1,4 +1,4 @@
-package br.univali.ttoproject.ide.components;
+package br.univali.ttoproject.ide.util;
 
 import javax.swing.JOptionPane;
 

@@ -1,4 +1,4 @@
-package br.univali.ttoproject.ide.core;
+package br.univali.ttoproject.ide.components;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
