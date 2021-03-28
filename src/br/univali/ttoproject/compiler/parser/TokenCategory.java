@@ -40,5 +40,15 @@ public enum TokenCategory {
         public String toString() {
             return "Literal";
         }
+    },
+    Operator {
+        public int id() {
+            return 4;
+        }
+
+        @Override
+        public String toString() {
+            return "Operator";
+        }
     }
 }
