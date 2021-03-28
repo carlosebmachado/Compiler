@@ -254,4 +254,28 @@ public class CompilerTest {
             }
         }
     }
+
+    @Test
+    public void categorizesUnknownTokens() {
+        List<TestCase> testCases = Arrays.asList(
+                new TestCase("?",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Unknown, ParserConstants.UNKNOWN, "?", 1, 1, 1, 1)))
+                );
+
+
+        for (TestCase testCase : testCases) {
+            var compiler = new Compiler();
+
+            compiler.setParser(new Parser(new StringReader(testCase.input)));
+
+            try {
+                var actual = compiler.tokenize();
+
+                assertEquals(testCase.expected, actual);
+            } catch (Exception e) {
+                System.out.println(e);
+                assertTrue(false);
+            }
+        }
+    }
 }
