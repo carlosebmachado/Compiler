@@ -51,7 +51,7 @@ public class CompilerTest {
     }
 
     @Test
-    public void categorizesTokens() {
+    public void categorizesKeywordTokens() {
         List<TestCase> testCases = Arrays.asList(
                 new TestCase("program",
                         Arrays.asList(new CategorizedToken(TokenCategory.Keyword, ParserConstants.PROGRAM, "program", 1, 1, 1, 7))),
@@ -92,7 +92,27 @@ public class CompilerTest {
                 new TestCase("while",
                         Arrays.asList(new CategorizedToken(TokenCategory.Keyword, ParserConstants.WHILE, "while", 1, 1, 1, 5))),
                 new TestCase("do",
-                        Arrays.asList(new CategorizedToken(TokenCategory.Keyword, ParserConstants.DO, "do", 1, 1, 1, 2))),
+                        Arrays.asList(new CategorizedToken(TokenCategory.Keyword, ParserConstants.DO, "do", 1, 1, 1, 2)))
+        );
+
+        for (TestCase testCase : testCases) {
+            var compiler = new Compiler();
+
+            compiler.setParser(new Parser(new StringReader(testCase.input)));
+
+            try {
+                var actual = compiler.tokenize();
+                assertEquals(testCase.expected, actual);
+            } catch (Exception e) {
+                System.out.println(e);
+                assertTrue(false);
+            }
+        }
+    }
+
+    @Test
+    public void categorizesOperatorTokens() {
+        List<TestCase> testCases = Arrays.asList(
                 new TestCase("+",
                         Arrays.asList(new CategorizedToken(TokenCategory.Operator, ParserConstants.PLUS, "+", 1, 1, 1, 1))),
                 new TestCase("-",
@@ -124,7 +144,33 @@ public class CompilerTest {
                 new TestCase("|",
                         Arrays.asList(new CategorizedToken(TokenCategory.Operator, ParserConstants.OR, "|", 1, 1, 1, 1))),
                 new TestCase("!",
-                        Arrays.asList(new CategorizedToken(TokenCategory.Operator, ParserConstants.NOT_SYMBOL, "!", 1, 1, 1, 1)))
+                        Arrays.asList(new CategorizedToken(TokenCategory.Operator, ParserConstants.NOT_SYMBOL, "!", 1, 1, 1, 1))),
+                new TestCase("x",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Operator, ParserConstants.IDENTIFIER, "x", 1, 1, 1, 1))
+                ));
+
+        for (TestCase testCase : testCases) {
+            var compiler = new Compiler();
+
+            compiler.setParser(new Parser(new StringReader(testCase.input)));
+
+            try {
+                var actual = compiler.tokenize();
+                assertEquals(testCase.expected, actual);
+            } catch (Exception e) {
+                System.out.println(e);
+                assertTrue(false);
+            }
+        }
+    }
+
+    @Test
+    public void categorizesIdentifierTokens() {
+        List<TestCase> testCases = Arrays.asList(
+                new TestCase("x",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, "x", 1, 1, 1, 1))),
+                new TestCase("xyz",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, "xyz", 1, 1, 1, 3)))
         );
 
         for (TestCase testCase : testCases) {

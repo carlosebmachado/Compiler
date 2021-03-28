@@ -166,11 +166,9 @@ public class Token implements java.io.Serializable {
             case ParserConstants.OR:
             case ParserConstants.NOT_SYMBOL:
                 return new CategorizedToken(TokenCategory.Operator, ofKind, image);
-                // identifier
             case ParserConstants.IDENTIFIER:
-
             case ParserConstants.LETTER:
-
+                return new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, image);
             case ParserConstants.UNSIGNED:
 
             case ParserConstants.SIGNED:
