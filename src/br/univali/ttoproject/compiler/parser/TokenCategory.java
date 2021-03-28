@@ -8,7 +8,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return "Keyword";
+            return String.format("Keyword(%i)", id());
         }
     },
     SpecialSymbol {
@@ -18,7 +18,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return "SpecialSymbol";
+            return String.format("SpecialSymbol(%d)", id());
         }
     },
     Identifier {
@@ -28,7 +28,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return "Identifier";
+            return String.format("Identifier(%d)", id());
         }
     },
     Literal {
@@ -38,7 +38,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return "Literal";
+            return String.format("Literal(%d)", id());
         }
     },
     Operator {
@@ -48,7 +48,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return "Operator";
+            return String.format("Operator(%d)", id());
         }
     },
     Unknown {
@@ -58,7 +58,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return "Unknown";
+            return String.format("Unknown(%d)", id());
         }
     }
 }
