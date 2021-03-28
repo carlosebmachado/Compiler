@@ -123,7 +123,7 @@ public class Token implements java.io.Serializable {
     public static CategorizedToken newToken(int ofKind, String image) {
         switch (ofKind) {
             case ParserConstants.EOF:
-                break;
+
             case ParserConstants.PROGRAM:
             case ParserConstants.DEFINE:
             case ParserConstants.NOT:
@@ -144,8 +144,8 @@ public class Token implements java.io.Serializable {
             case ParserConstants.LOOP:
             case ParserConstants.WHILE:
             case ParserConstants.DO:
-                break;
-                // special symbols
+                return new CategorizedToken(TokenCategory.Keyword, ofKind, image);
+            // special symbols
             case ParserConstants.LBRACE:
             case ParserConstants.RBRACE:
             case ParserConstants.PARENTHESESL:
@@ -172,24 +172,24 @@ public class Token implements java.io.Serializable {
                 // identifier
             case ParserConstants.IDENTIFIER:
 
-            case ParserConstants.LETTER
+            case ParserConstants.LETTER:
 
-            case ParserConstants.UNSIGNED
+            case ParserConstants.UNSIGNED:
 
-            case ParserConstants.SIGNED
+            case ParserConstants.SIGNED:
 
-            case ParserConstants.REAL_UNSIGNED
+            case ParserConstants.REAL_UNSIGNED:
 
-            case ParserConstants.REAL_SIGNED
+            case ParserConstants.REAL_SIGNED:
 
                 // literal
             case ParserConstants.STRING:
-                break;
 
-            case ParserConstants.UNKNOWN
+
+            case ParserConstants.UNKNOWN:
 
             default:
-                return new Token(ofKind, image);
+                return new CategorizedToken(TokenCategory.SpecialSymbol, ofKind, image);
         }
     }
 
