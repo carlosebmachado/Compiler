@@ -29,7 +29,6 @@ public class CompilerTest {
                 "/* hello world 1 + 2 */"
         );
 
-
         for (String input : testCases) {
             var compiler = new Compiler();
 
