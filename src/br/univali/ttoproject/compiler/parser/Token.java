@@ -143,12 +143,6 @@ public class Token implements java.io.Serializable {
             case ParserConstants.WHILE:
             case ParserConstants.DO:
                 return new CategorizedToken(TokenCategory.Keyword, ofKind, image);
-            case ParserConstants.LBRACE:
-            case ParserConstants.RBRACE:
-            case ParserConstants.PARENTHESESL:
-            case ParserConstants.PARANTHESESR:
-            case ParserConstants.DOT:
-            case ParserConstants.COMMA:
             case ParserConstants.PLUS:
             case ParserConstants.MINUS:
             case ParserConstants.POWER:
@@ -170,19 +164,19 @@ public class Token implements java.io.Serializable {
             case ParserConstants.LETTER:
                 return new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, image);
             case ParserConstants.UNSIGNED:
-
             case ParserConstants.SIGNED:
-
             case ParserConstants.REAL_UNSIGNED:
-
             case ParserConstants.REAL_SIGNED:
-
-                // literal
             case ParserConstants.STRING:
-
-
+                return new CategorizedToken(TokenCategory.Literal, ofKind, image);
             case ParserConstants.UNKNOWN:
             case ParserConstants.EOF:
+            case ParserConstants.LBRACE:
+            case ParserConstants.RBRACE:
+            case ParserConstants.PARENTHESESL:
+            case ParserConstants.PARANTHESESR:
+            case ParserConstants.DOT:
+            case ParserConstants.COMMA:
             default:
                 return new CategorizedToken(TokenCategory.SpecialSymbol, ofKind, image);
         }

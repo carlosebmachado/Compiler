@@ -170,7 +170,40 @@ public class CompilerTest {
                 new TestCase("x",
                         Arrays.asList(new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, "x", 1, 1, 1, 1))),
                 new TestCase("xyz",
-                        Arrays.asList(new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, "xyz", 1, 1, 1, 3)))
+                        Arrays.asList(new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, "xyz", 1, 1, 1, 3))),
+                new TestCase("xyz123",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, "xyz123", 1, 1, 1, 6)))
+        );
+
+        for (TestCase testCase : testCases) {
+            var compiler = new Compiler();
+
+            compiler.setParser(new Parser(new StringReader(testCase.input)));
+
+            try {
+                var actual = compiler.tokenize();
+                assertEquals(testCase.expected, actual);
+            } catch (Exception e) {
+                System.out.println(e);
+                assertTrue(false);
+            }
+        }
+    }
+
+
+    @Test
+    public void categorizesLiterals() {
+        List<TestCase> testCases = Arrays.asList(
+                new TestCase("123",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Literal, ParserConstants.UNSIGNED, "123", 1, 1, 1, 3))),
+                new TestCase("-123",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Literal, ParserConstants.SIGNED, "-123", 1, 1, 1, 4))),
+                new TestCase("3.14",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Literal, ParserConstants.REAL_UNSIGNED, "3.14", 1, 1, 1, 4))),
+                new TestCase("-3.14",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Literal, ParserConstants.REAL_SIGNED, "-3.14", 1, 1, 1, 5))),
+                new TestCase("\"hello world\"",
+                        Arrays.asList(new CategorizedToken(TokenCategory.Literal, ParserConstants.STRING, "\"hello world\"", 1, 1, 1, 13)))
         );
 
         for (TestCase testCase : testCases) {
