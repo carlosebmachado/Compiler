@@ -220,4 +220,38 @@ public class CompilerTest {
             }
         }
     }
+
+    @Test
+    public void categorizesSpecialSymbols() {
+        List<TestCase> testCases = Arrays.asList(
+                new TestCase("{",
+                        Arrays.asList(new CategorizedToken(TokenCategory.SpecialSymbol, ParserConstants.LBRACE, "{", 1, 1, 1, 1))),
+                new TestCase("}",
+                        Arrays.asList(new CategorizedToken(TokenCategory.SpecialSymbol, ParserConstants.RBRACE, "}", 1, 1, 1, 1))),
+                new TestCase("(",
+                        Arrays.asList(new CategorizedToken(TokenCategory.SpecialSymbol, ParserConstants.PARENTHESESL, "(", 1, 1, 1, 1))),
+                new TestCase(")",
+                        Arrays.asList(new CategorizedToken(TokenCategory.SpecialSymbol, ParserConstants.PARANTHESESR, ")", 1, 1, 1, 1))),
+                new TestCase(".",
+                        Arrays.asList(new CategorizedToken(TokenCategory.SpecialSymbol, ParserConstants.DOT, ".", 1, 1, 1, 1))),
+                new TestCase(",",
+                        Arrays.asList(new CategorizedToken(TokenCategory.SpecialSymbol, ParserConstants.COMMA, ",", 1, 1, 1, 1)))
+        );
+
+
+        for (TestCase testCase : testCases) {
+            var compiler = new Compiler();
+
+            compiler.setParser(new Parser(new StringReader(testCase.input)));
+
+            try {
+                var actual = compiler.tokenize();
+
+                assertEquals(testCase.expected, actual);
+            } catch (Exception e) {
+                System.out.println(e);
+                assertTrue(false);
+            }
+        }
+    }
 }

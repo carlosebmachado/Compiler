@@ -50,5 +50,15 @@ public enum TokenCategory {
         public String toString() {
             return "Operator";
         }
+    },
+    Unknown {
+        public int id() {
+            return 5;
+        }
+
+        @Override
+        public String toString() {
+            return "Unknown";
+        }
     }
 }
