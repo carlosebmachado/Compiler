@@ -69,7 +69,7 @@ TOKEN :
 | <POWER: "**">
 | <MULTIPLICATION: "*">
 | <DIVISION: "/">
-| <ENTIRE_DIVISION: "%">
+| <INTEGER_DIVISION: "%">
 | <REST: "%%">
 | <EQUAL: "==">
 | <DIFFERENT: "!=">
