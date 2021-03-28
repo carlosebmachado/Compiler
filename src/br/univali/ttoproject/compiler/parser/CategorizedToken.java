@@ -38,12 +38,13 @@ public class CategorizedToken extends Token {
     @Override
     public String toString() {
         return "CategorizedToken{\n" +
-                "category = " + category + "\n" +
-                "kind = " + kind + "\n" +
-                "image = " + image + "\n" +
-                "beginLine = " + beginLine + "\n" +
-                "endLine = " + endLine + "\n" +
-                "beginColumn = " + beginColumn + "\n" +
-                "endColumn = " + endColumn + "\n";
+                "   category = " + category + "\n" +
+                "   kind = " + ParserConstants.tokenImage[kind] + " - " + kind + "\n" +
+                "   image = " + image + "\n" +
+                "   beginLine = " + beginLine + "\n" +
+                "   endLine = " + endLine + "\n" +
+                "   beginColumn = " + beginColumn + "\n" +
+                "   endColumn = " + endColumn + "\n" +
+                "}\n";
     }
 }

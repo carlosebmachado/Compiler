@@ -26,14 +26,11 @@ public class Compiler {
             var tokens = tokenize();
 
             for (Token token : tokens) {
-
                 if (ParserConstants.tokenImage[token.kind] == "<UNKNOWN>") {
                     strTokenizer += "Lexical error at line " + token.beginLine + ", column " + token.beginColumn
                             + ". The following character '" + token.image + "' is invalid.\n\n";
                 } else {
-                    strTokenizer += "Line: " + token.beginLine + "\nColumn:" + token.beginColumn + "\nCategory Number: "
-                            + token.kind + "\nCategory: " + ParserConstants.tokenImage[token.kind] + "\nToken: "
-                            + token.image + "\n\n";
+                    strTokenizer += token.toString();
                 }
             }
         } catch (FileNotFoundException e) {
