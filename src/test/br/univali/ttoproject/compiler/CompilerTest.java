@@ -23,6 +23,30 @@ class TestCase {
 
 public class CompilerTest {
     @Test
+    public void ignoresComments() {
+        List<String> testCases = Arrays.asList(
+                ":- x y + 1 123 -abd",
+                "/* hello world 1 + 2 */"
+        );
+
+
+        for (String input : testCases) {
+            var compiler = new Compiler();
+
+            compiler.setParser(new Parser(new StringReader(input)));
+
+            try {
+                var actual = compiler.tokenize();
+
+                assertTrue(actual.isEmpty());
+            } catch (Exception e) {
+                System.out.println(e);
+                assertTrue(false);
+            }
+        }
+    }
+
+    @Test
     public void isCaseInsensitiveWhenLexingKeywords() {
         List<TestCase> testCases = Arrays.asList(
                 new TestCase("define",
@@ -260,7 +284,7 @@ public class CompilerTest {
         List<TestCase> testCases = Arrays.asList(
                 new TestCase("?",
                         Arrays.asList(new CategorizedToken(TokenCategory.Unknown, ParserConstants.UNKNOWN, "?", 1, 1, 1, 1)))
-                );
+        );
 
 
         for (TestCase testCase : testCases) {
