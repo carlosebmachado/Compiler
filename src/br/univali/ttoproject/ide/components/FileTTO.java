@@ -1,56 +1,25 @@
 package br.univali.ttoproject.ide.components;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.text.MessageFormat;
 
 import javax.swing.filechooser.FileSystemView;
 
-public class FileTTO {
+public class FileTTO extends File {
 
-    private String name;
-    private String path;
+    private static final String DEFAULT_PATH =
+            FileSystemView.getFileSystemView().getDefaultDirectory().getPath() +"\\" + "untitled.tto";
 
     public FileTTO() {
-        name = "untitled.tto";
-        path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\";
-    }
-
-    public FileTTO(String name, String path) {
-        this.name = name;
-        this.path = path;
+        super(DEFAULT_PATH);
     }
 
     public FileTTO(String fullPath) {
-        var slice = fullPath.split("\\\\");
-        name = slice[slice.length-1];
-        path = "";
-        for (int i = 0; i < slice.length-1; i++) {
-            path = MessageFormat.format("{0}{1}\\", path, slice[i]);
-        }
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+        super(fullPath);
     }
 
     public void save(String content) {
-        try (PrintWriter out = new PrintWriter(getFullPath())) {
+        try (var out = new PrintWriter(this)) {
             out.println(content);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -58,39 +27,19 @@ public class FileTTO {
     }
 
     public String load() {
-        String content = "";
-        BufferedReader br = null;
+        var content = new StringBuilder();
         try {
-            br = new BufferedReader(new FileReader(getFullPath()));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            StringBuilder sb = new StringBuilder();
-            assert br != null;
+            var br = new BufferedReader(new FileReader(this));
             String line = br.readLine();
-
             while (line != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
+                content.append(line);
+                content.append(System.lineSeparator());
                 line = br.readLine();
             }
-            content = sb.toString();
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                assert br != null;
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-        return content;
+        return content.toString();
     }
-
-    public String getFullPath() {
-        return path + name;
-    }
-
 }
