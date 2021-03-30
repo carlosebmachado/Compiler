@@ -9,7 +9,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Utilities;
 
 import br.univali.ttoproject.compiler.Compiler;
-import br.univali.ttoproject.ide.components.ShowHelp;
 import br.univali.ttoproject.ide.components.TextLineNumber;
 import br.univali.ttoproject.ide.core.FileTTO;
 

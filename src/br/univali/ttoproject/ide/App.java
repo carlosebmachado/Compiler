@@ -87,7 +87,7 @@ public class App extends JFrame {
         // status bar
         var statusBar = new StatusBar();
         lblLnCol = new JLabel("Ln 1, Col 1");
-        lblTabSize = new JLabel(Settings.TAB_SIZE + " spaces");
+        lblTabSize = new JLabel(SettingsForm.TAB_SIZE + " spaces");
         statusBar.add(lblLnCol);
         statusBar.add(lblTabSize);
         panelMain.add(statusBar, BorderLayout.SOUTH);
@@ -187,7 +187,7 @@ public class App extends JFrame {
     }
 
     public boolean mSettings() {
-        new Settings(this);
+        new SettingsForm(this);
 
         return true;
     }
@@ -267,7 +267,7 @@ public class App extends JFrame {
     }
 
     public boolean mHelp() {
-        new ShowHelp();
+        new HelpForm();
 
         return true;
     }
@@ -361,8 +361,8 @@ public class App extends JFrame {
      ******************************************************************************************************************/
 
     public void updateSettings() {
-        taEdit.setTabSize(Settings.TAB_SIZE);
-        lblTabSize.setText(Settings.TAB_SIZE + " spaces");
+        taEdit.setTabSize(SettingsForm.TAB_SIZE);
+        lblTabSize.setText(SettingsForm.TAB_SIZE + " spaces");
     }
 
     public void resetControlVars() {

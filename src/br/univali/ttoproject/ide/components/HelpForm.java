@@ -1,44 +1,34 @@
 package br.univali.ttoproject.ide.components;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import br.univali.ttoproject.ide.App;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.JScrollPane;
+import javax.swing.tree.DefaultTreeModel;
+import java.awt.*;
 
-public class ShowHelp extends JDialog {
+public class HelpForm extends JFrame {
 
-    private static final long serialVersionUID = 6778897407450170972L;
-    private final JPanel contentPanel = new JPanel();
+    private JPanel panelMain;
 
-    /**
-     * Create the dialog.
-     */
-    @SuppressWarnings("serial")
-    public ShowHelp() {
+    public HelpForm() {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setResizable(false);
         setTitle("Help");
-        setVisible(true);
+        setIconImage(Toolkit.getDefaultToolkit().getImage(SettingsForm.class.getResource("/img/icon.png")));
         setBounds(0, 0, 450, 300);
         setLocationRelativeTo(null);
-        getContentPane().setLayout(new BorderLayout());
-        contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
-        contentPanel.setLayout(null);
+        getContentPane().add(panelMain, BorderLayout.CENTER);
+        setVisible(true);
 
-        JScrollPane scrollPane = new JScrollPane();
+        var scrollPane = new JScrollPane();
         scrollPane.setBounds(10, 11, 414, 206);
-        contentPanel.add(scrollPane);
+        panelMain.add(scrollPane);
 
-        JTree tree = new JTree();
+        var tree = new JTree();
         tree.setModel(new DefaultTreeModel(
                 new DefaultMutableTreeNode("Help") {
                     {
@@ -70,11 +60,11 @@ public class ShowHelp extends JDialog {
 
         scrollPane.setViewportView(tree);
         {
-            JPanel buttonPane = new JPanel();
+            var buttonPane = new JPanel();
             buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
             getContentPane().add(buttonPane, BorderLayout.SOUTH);
             {
-                JButton okButton = new JButton("OK");
+                var okButton = new JButton("OK");
                 okButton.setActionCommand("OK");
                 buttonPane.add(okButton);
                 getRootPane().setDefaultButton(okButton);
