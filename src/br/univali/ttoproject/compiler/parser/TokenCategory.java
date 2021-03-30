@@ -8,7 +8,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return String.format("Keyword(%i)", id());
+            return String.format("Keyword(%d)", id());
         }
     },
     SpecialSymbol {
