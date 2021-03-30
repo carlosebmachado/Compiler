@@ -11,7 +11,7 @@ public class Console extends JTextArea {
     private int initialCaretPosition;
 
     public Console() {
-        setTabSize(4);
+        setTabSize(0);
         setFocusTraversalKeysEnabled(false);
         addKeyListener(new KeyAdapter() {
             @Override
@@ -21,59 +21,60 @@ public class Console extends JTextArea {
         });
     }
 
-    public void handleKey(KeyEvent e) {
-        if (allowConsoleInput) {
-            userInput(e);
-        } else {
-            e.consume();
-        }
-    }
-
-    public void init() {
-        allowConsoleInput = true;
-        allowedCaretPosition = getCaretPosition();
-        initialCaretPosition = allowedCaretPosition;
-    }
-
-    public void stop() {
-        allowConsoleInput = false;
-    }
-
-    public void reset() {
-        setText("");
+    public String getUserInput() {
+        return "";
     }
 
     public void addContent(String content) {
         setText(getText() + content);
     }
 
-    public void userInput(KeyEvent e) {
-        requestFocusInWindow();
+    public void reset() {
+        setText("");
+        allowConsoleInput = false;
+    }
 
-        var keyChar = e.getKeyChar();
-        var curCaretPosition = getCaretPosition();
+    private void init() {
+        allowConsoleInput = true;
+        allowedCaretPosition = getCaretPosition();
+        initialCaretPosition = allowedCaretPosition;
+    }
 
-        if (keyChar == '\b') {
-            if (curCaretPosition > initialCaretPosition) {
-                allowedCaretPosition--;
-            } else {
-                e.consume();
+    private void stop() {
+        allowConsoleInput = false;
+    }
+
+    private void handleKey(KeyEvent e) {
+        if (allowConsoleInput) {
+            requestFocusInWindow();
+
+            var keyChar = e.getKeyChar();
+            var curCaretPosition = getCaretPosition();
+
+            if (keyChar == '\b') {
+                if (curCaretPosition > initialCaretPosition) {
+                    allowedCaretPosition--;
+                } else {
+                    e.consume();
+                }
+                return;
             }
-            return;
-        }
-        if (keyChar == '\n') {
-            stop();
-            return;
-        }
-        if (keyChar == '\t') {
-            e.consume();
-            return;
-        }
+            if (keyChar == '\n') {
+                stop();
+                return;
+            }
+            if (keyChar == '\t') {
+                e.consume();
+                return;
+            }
 
-        if (allowedCaretPosition != curCaretPosition) {
-            e.consume();
+            if (allowedCaretPosition != curCaretPosition) {
+                e.consume();
+            } else {
+                allowedCaretPosition++;
+            }
         } else {
-            allowedCaretPosition++;
+            e.consume();
         }
     }
 
