@@ -118,65 +118,64 @@ public class Token implements java.io.Serializable {
      */
     public static CategorizedToken newToken(int ofKind, String image) {
         switch (ofKind) {
-        case ParserConstants.PROGRAM:
-        case ParserConstants.DEFINE:
-        case ParserConstants.NOT:
-        case ParserConstants.VARIABLE:
-        case ParserConstants.IS:
-        case ParserConstants.NATURAL:
-        case ParserConstants.REAL:
-        case ParserConstants.CHAR:
-        case ParserConstants.BOOLEAN:
-        case ParserConstants.EXECUTE:
-        case ParserConstants.SET:
-        case ParserConstants.TO:
-        case ParserConstants.GET:
-        case ParserConstants.PUT:
-        case ParserConstants.VERIFY:
-        case ParserConstants.TRUE:
-        case ParserConstants.FALSE:
-        case ParserConstants.LOOP:
-        case ParserConstants.WHILE:
-        case ParserConstants.DO:
-            return new CategorizedToken(TokenCategory.Keyword, ofKind, image);
-        case ParserConstants.PLUS:
-        case ParserConstants.MINUS:
-        case ParserConstants.POWER:
-        case ParserConstants.MULTIPLICATION:
-        case ParserConstants.DIVISION:
-        case ParserConstants.INTEGER_DIVISION:
-        case ParserConstants.REST:
-        case ParserConstants.EQUAL:
-        case ParserConstants.DIFFERENT:
-        case ParserConstants.SMALLER:
-        case ParserConstants.LARGER:
-        case ParserConstants.SMALLER_EQUAL:
-        case ParserConstants.LARGER_EQUAL:
-        case ParserConstants.AND:
-        case ParserConstants.OR:
-        case ParserConstants.NOT_SYMBOL:
-            return new CategorizedToken(TokenCategory.SpecialSymbol, ofKind, image);
-        case ParserConstants.IDENTIFIER:
-        case ParserConstants.LETTER:
-            return new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, image);
-        case ParserConstants.UNSIGNED:
-        case ParserConstants.SIGNED:
-            return new CategorizedToken(TokenCategory.IntegerConstant, ofKind, image);
-        case ParserConstants.REAL_UNSIGNED:
-        case ParserConstants.REAL_SIGNED:
-            return new CategorizedToken(TokenCategory.RealConstant, ofKind, image);
-        case ParserConstants.STRING:
-            return new CategorizedToken(TokenCategory.LiteralConstant, ofKind, image);
-        case ParserConstants.EOF:
-        case ParserConstants.LBRACE:
-        case ParserConstants.RBRACE:
-        case ParserConstants.PARENTHESESL:
-        case ParserConstants.PARANTHESESR:
-        case ParserConstants.DOT:
-        case ParserConstants.COMMA:
-            return new CategorizedToken(TokenCategory.SpecialSymbol, ofKind, image);
-        default:
-            return new CategorizedToken(TokenCategory.Unknown, ofKind, image);
+            case ParserConstants.PROGRAM:
+            case ParserConstants.DEFINE:
+            case ParserConstants.NOT:
+            case ParserConstants.VARIABLE:
+            case ParserConstants.IS:
+            case ParserConstants.NATURAL:
+            case ParserConstants.REAL:
+            case ParserConstants.CHAR:
+            case ParserConstants.BOOLEAN:
+            case ParserConstants.EXECUTE:
+            case ParserConstants.SET:
+            case ParserConstants.TO:
+            case ParserConstants.GET:
+            case ParserConstants.PUT:
+            case ParserConstants.VERIFY:
+            case ParserConstants.TRUE:
+            case ParserConstants.FALSE:
+            case ParserConstants.LOOP:
+            case ParserConstants.WHILE:
+            case ParserConstants.DO:
+                return new CategorizedToken(TokenCategory.Keyword, ofKind, image);
+            case ParserConstants.IDENTIFIER:
+            case ParserConstants.LETTER:
+                return new CategorizedToken(TokenCategory.Identifier, ParserConstants.IDENTIFIER, image);
+            case ParserConstants.UNSIGNED:
+            case ParserConstants.SIGNED:
+                return new CategorizedToken(TokenCategory.IntegerConstant, ofKind, image);
+            case ParserConstants.REAL_UNSIGNED:
+            case ParserConstants.REAL_SIGNED:
+                return new CategorizedToken(TokenCategory.RealConstant, ofKind, image);
+            case ParserConstants.STRING:
+                return new CategorizedToken(TokenCategory.LiteralConstant, ofKind, image);
+            case ParserConstants.EOF:
+            case ParserConstants.LBRACE:
+            case ParserConstants.RBRACE:
+            case ParserConstants.PARENTHESESL:
+            case ParserConstants.PARANTHESESR:
+            case ParserConstants.DOT:
+            case ParserConstants.COMMA:
+            case ParserConstants.PLUS:
+            case ParserConstants.MINUS:
+            case ParserConstants.POWER:
+            case ParserConstants.MULTIPLICATION:
+            case ParserConstants.DIVISION:
+            case ParserConstants.INTEGER_DIVISION:
+            case ParserConstants.REST:
+            case ParserConstants.EQUAL:
+            case ParserConstants.DIFFERENT:
+            case ParserConstants.SMALLER:
+            case ParserConstants.LARGER:
+            case ParserConstants.SMALLER_EQUAL:
+            case ParserConstants.LARGER_EQUAL:
+            case ParserConstants.AND:
+            case ParserConstants.OR:
+            case ParserConstants.NOT_SYMBOL:
+                return new CategorizedToken(TokenCategory.SpecialSymbol, ofKind, image);
+            default:
+                return new CategorizedToken(TokenCategory.Unknown, ofKind, image);
         }
     }
 
