@@ -2,6 +2,7 @@ package br.univali.ttoproject.ide;
 
 import br.univali.ttoproject.compiler.Compiler;
 import br.univali.ttoproject.ide.components.*;
+import br.univali.ttoproject.ide.components.Console;
 import br.univali.ttoproject.ide.components.MenuBar;
 
 import javax.swing.*;
@@ -18,7 +19,7 @@ public class App extends JFrame {
     private JPanel panelMain;
 
     private final JTextArea taEdit;
-    private final JTextArea taConsole;
+    private final JTextArea console;
     private final JLabel lblLnCol;
     private final JLabel lblTabSize;
 
@@ -29,10 +30,6 @@ public class App extends JFrame {
 
     private boolean compiled = false;
     private boolean running = false;
-
-    private boolean allowConsoleInput = false;
-    private int allowedCaretPosition;
-    private int initialCaretPosition;
 
     public static void main(String[] args) {
         try {
@@ -91,24 +88,16 @@ public class App extends JFrame {
         statusBar.add(lblLnCol);
         statusBar.add(lblTabSize);
         panelMain.add(statusBar, BorderLayout.SOUTH);
-
-        JSplitPane splitPane = new JSplitPane();
+        // split pane (up: editor down: console)
+        var splitPane = new JSplitPane();
         splitPane.setResizeWeight(0.8);
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         panelMain.add(splitPane, BorderLayout.CENTER);
-
-        taConsole = new JTextArea();
-        taConsole.setTabSize(4);
-        taConsole.setFocusTraversalKeysEnabled(false);
-        taConsole.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                cHandleKey(e);
-            }
-        });
-        JScrollPane scpConsole = new JScrollPane(taConsole);
+        // console
+        console = new Console();
+        var scpConsole = new JScrollPane(console);
         splitPane.setRightComponent(scpConsole);
-
+        // editor
         taEdit = new JTextArea();
         taEdit.setTabSize(4);
         taEdit.setFont(new Font("Consolas", Font.PLAIN, 14));
@@ -120,10 +109,10 @@ public class App extends JFrame {
         });
         taEdit.addCaretListener(e -> updateLCLabel());
 
-        JScrollPane scpEdit = new JScrollPane(taEdit);
+        var scpEdit = new JScrollPane(taEdit);
         splitPane.setLeftComponent(scpEdit);
 
-        TextLineNumber tln = new TextLineNumber(taEdit);
+        var tln = new TextLineNumber(taEdit);
         scpEdit.setRowHeaderView(tln);
         scpEdit.setViewportView(taEdit);
 
@@ -233,7 +222,7 @@ public class App extends JFrame {
         if (!mSave()) return false;
 
         compiled = true;
-        taConsole.setText(new Compiler().build(new StringReader(taEdit.getText())));
+        console.setText(new Compiler().build(new StringReader(taEdit.getText())));
 
         // test
 //        cAddContent("\nDigite: ");
@@ -275,62 +264,6 @@ public class App extends JFrame {
     /*******************************************************************************************************************
      * UI controls
      ******************************************************************************************************************/
-    private void cHandleKey(KeyEvent e) {
-        if (allowConsoleInput) {
-            cUserInput(e);
-        } else {
-            e.consume();
-        }
-    }
-
-    private void cInit() {
-        allowConsoleInput = true;
-        allowedCaretPosition = taConsole.getCaretPosition();
-        initialCaretPosition = allowedCaretPosition;
-    }
-
-    private void cStop() {
-        allowConsoleInput = false;
-    }
-
-    private void cReset() {
-        taConsole.setText("");
-    }
-
-    private void cAddContent(String content) {
-        taConsole.setText(taConsole.getText() + content);
-    }
-
-    private void cUserInput(KeyEvent e) {
-        taConsole.requestFocusInWindow();
-
-        var keyChar = e.getKeyChar();
-        var curCaretPosition = taConsole.getCaretPosition();
-
-        if (keyChar == '\b') {
-            if (curCaretPosition > initialCaretPosition) {
-                allowedCaretPosition--;
-            } else {
-                e.consume();
-            }
-            return;
-        }
-        if (keyChar == '\n') {
-            cStop();
-            return;
-        }
-        if (keyChar == '\t') {
-            e.consume();
-            return;
-        }
-
-        if (allowedCaretPosition != curCaretPosition) {
-            e.consume();
-        } else {
-            allowedCaretPosition++;
-        }
-    }
-
     private void updateLCLabel() {
         int caretPos = taEdit.getCaretPosition();
         long rows;
