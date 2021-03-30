@@ -31,29 +31,39 @@ public enum TokenCategory {
             return String.format("Identifier(%d)", id());
         }
     },
-    Literal {
+    LiteralConstant {
         public int id() {
             return 3;
         }
 
         @Override
         public String toString() {
-            return String.format("Literal(%d)", id());
+            return String.format("LiteralConstant(%d)", id());
         }
     },
-    Operator {
+    IntegerConstant {
         public int id() {
             return 4;
         }
 
         @Override
         public String toString() {
-            return String.format("Operator(%d)", id());
+            return String.format("IntegerConstant(%d)", id());
+        }
+    },
+    RealConstant {
+        public int id() {
+            return 5;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("RealConstant(%d)", id());
         }
     },
     Unknown {
         public int id() {
-            return 5;
+            return 6;
         }
 
         @Override

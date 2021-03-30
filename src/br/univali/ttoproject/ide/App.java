@@ -11,7 +11,6 @@ import javax.swing.text.Utilities;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class App extends JFrame {
@@ -38,9 +37,9 @@ public class App extends JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException |
-                 InstantiationException |
-                 IllegalAccessException |
-                 UnsupportedLookAndFeelException ex) {
+                InstantiationException |
+                IllegalAccessException |
+                UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
@@ -282,13 +281,13 @@ public class App extends JFrame {
         }
     }
 
-    private void cInit(){
+    private void cInit() {
         allowConsoleInput = true;
         allowedCaretPosition = taConsole.getCaretPosition();
         initialCaretPosition = allowedCaretPosition;
     }
 
-    private void cStop(){
+    private void cStop() {
         allowConsoleInput = false;
     }
 
@@ -306,19 +305,19 @@ public class App extends JFrame {
         var keyChar = e.getKeyChar();
         var curCaretPosition = taConsole.getCaretPosition();
 
-        if (keyChar == '\b'){
-            if (curCaretPosition > initialCaretPosition){
+        if (keyChar == '\b') {
+            if (curCaretPosition > initialCaretPosition) {
                 allowedCaretPosition--;
             } else {
                 e.consume();
             }
             return;
         }
-        if (keyChar == '\n'){
+        if (keyChar == '\n') {
             cStop();
             return;
         }
-        if (keyChar == '\t'){
+        if (keyChar == '\t') {
             e.consume();
             return;
         }
