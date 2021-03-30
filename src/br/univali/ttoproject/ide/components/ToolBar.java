@@ -4,60 +4,61 @@ import br.univali.ttoproject.ide.App;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ToolBar extends JToolBar {
-    public ToolBar(Consumer[] consumers, Supplier[] suppliers){
 
-        JButton btnNew = new JButton("");
-        btnNew.addActionListener(e -> consumers[MenuOptions.NEW.getId()].accept(null));
+    public ToolBar(Supplier<?>[] methods){
+
+        var btnNew = new JButton("");
+        btnNew.addActionListener(e -> methods[MenuOptions.NEW.getId()].get());
         btnNew.setIcon(new ImageIcon(App.class.getResource("/img/New File.png")));
         add(btnNew);
 
-        JButton btnOpen = new JButton("");
-        btnOpen.addActionListener(e -> consumers[MenuOptions.OPEN.getId()].accept(null));
+        var btnOpen = new JButton("");
+        btnOpen.addActionListener(e -> methods[MenuOptions.OPEN.getId()].get());
         btnOpen.setIcon(new ImageIcon(App.class.getResource("/img/Open Project.png")));
         add(btnOpen);
 
-        JButton btnSave = new JButton("");
-        btnSave.addActionListener(e -> suppliers[MenuOptions.SAVE.getId()].get());
+        var btnSave = new JButton("");
+        btnSave.addActionListener(e -> methods[MenuOptions.SAVE.getId()].get());
         btnSave.setIcon(new ImageIcon(App.class.getResource("/img/Save File.png")));
         add(btnSave);
 
-        JSeparator separator = new JSeparator();
-        separator.setMaximumSize(new Dimension(4, 32767));
-        separator.setOrientation(SwingConstants.VERTICAL);
-        add(separator);
+        var separator1 = new JSeparator();
+        separator1.setMaximumSize(new Dimension(4, 32767));
+        separator1.setOrientation(SwingConstants.VERTICAL);
+        add(separator1);
 
-        JButton btnCut = new JButton("");
-        btnCut.addActionListener(e -> consumers[MenuOptions.CUT.getId()].accept(null));
+        var btnCut = new JButton("");
+        btnCut.addActionListener(e -> methods[MenuOptions.CUT.getId()].get());
         btnCut.setIcon(new ImageIcon(App.class.getResource("/img/Cut.PNG")));
         add(btnCut);
 
-        JButton btnCopy = new JButton("");
-        btnCopy.addActionListener(e -> consumers[MenuOptions.COPY.getId()].accept(null));
+        var btnCopy = new JButton("");
+        btnCopy.addActionListener(e -> methods[MenuOptions.COPY.getId()].get());
         btnCopy.setIcon(new ImageIcon(App.class.getResource("/img/Copy.PNG")));
         add(btnCopy);
 
-        JButton btnPaste = new JButton("");
-        btnPaste.addActionListener(e -> consumers[MenuOptions.PASTE.getId()].accept(null));
+        var btnPaste = new JButton("");
+        btnPaste.addActionListener(e -> methods[MenuOptions.PASTE.getId()].get());
         btnPaste.setIcon(new ImageIcon(App.class.getResource("/img/Paste.png")));
         add(btnPaste);
 
-        JSeparator separator_1 = new JSeparator();
-        separator_1.setOrientation(SwingConstants.VERTICAL);
-        separator_1.setMaximumSize(new Dimension(4, 32767));
-        add(separator_1);
+        var separator2 = new JSeparator();
+        separator2.setOrientation(SwingConstants.VERTICAL);
+        separator2.setMaximumSize(new Dimension(4, 32767));
+        add(separator2);
 
-        JButton btnBuild = new JButton("");
-        btnBuild.addActionListener(e -> consumers[MenuOptions.COMPILE.getId()].accept(null));
+        var btnBuild = new JButton("");
+        btnBuild.addActionListener(e -> methods[MenuOptions.COMPILE.getId()].get());
         btnBuild.setIcon(new ImageIcon(App.class.getResource("/img/Cog.png")));
         add(btnBuild);
 
-        JButton btnRun = new JButton("");
-        btnRun.addActionListener(e -> consumers[MenuOptions.RUN.getId()].accept(null));
+        var btnRun = new JButton("");
+        btnRun.addActionListener(e -> methods[MenuOptions.RUN.getId()].get());
         btnRun.setIcon(new ImageIcon(App.class.getResource("/img/Run .PNG")));
         add(btnRun);
     }
+
 }

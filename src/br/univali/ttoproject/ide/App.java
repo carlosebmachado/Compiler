@@ -6,13 +6,12 @@ import br.univali.ttoproject.ide.components.MenuBar;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Utilities;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.function.Consumer;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class App extends JFrame {
@@ -39,9 +38,9 @@ public class App extends JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException |
-                InstantiationException |
-                IllegalAccessException |
-                UnsupportedLookAndFeelException ex) {
+                 InstantiationException |
+                 IllegalAccessException |
+                 UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(App.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
@@ -77,14 +76,15 @@ public class App extends JFrame {
         // Components
 
         // menu methods
-        Consumer[] menuConsumers = { o -> fNew(), o -> fOpen(), o -> fExit(), o -> fCut(), o -> fCopy(),
-                                     o -> fPaste(), o -> fCompile(), o -> fRun(), o -> fAbout(), o -> fHelp() };
-        Supplier[] menuSuppliers = { this::fSave, this::fSaveAs };
+        Supplier<?>[] menuMethods = {
+                this::fNew, this::fOpen, this::fSave, this::fSaveAs, this::fSettings, this::fExit, this::fCut,
+                this::fCopy, this::fPaste, this::fCompile, this::fRun, this::fAbout, this::fHelp
+        };
 
         // menu bar
-        setJMenuBar(new MenuBar(menuConsumers, menuSuppliers));
+        setJMenuBar(new MenuBar(menuMethods));
         // tool bar
-        add(new ToolBar(menuConsumers, menuSuppliers), BorderLayout.NORTH);
+        add(new ToolBar(menuMethods), BorderLayout.NORTH);
         // status bar
         var statusBar = new StatusBar();
         lblLnCol = new JLabel("Ln 1, Col 1");
@@ -126,6 +126,8 @@ public class App extends JFrame {
         scpEdit.setRowHeaderView(tln);
         scpEdit.setViewportView(taEdit);
 
+        updateSettings();
+
         setVisible(true);
     }
 
@@ -133,26 +135,30 @@ public class App extends JFrame {
      * Actions
      ******************************************************************************************************************/
 
-    public void fNew() {
-        if (cancelSaveFileOp()) return;
+    public boolean fNew() {
+        if (cancelSaveFileOp()) return false;
 
         file = new FileTTO();
         taEdit.setText("");
         resetControlVars();
         newFile = true;
         setTitle("Compiler");
+
+        return true;
     }
 
-    public void fOpen() {
-        if (cancelSaveFileOp()) return;
+    public boolean fOpen() {
+        if (cancelSaveFileOp()) return false;
 
         var fullPath = getFilePath(false);
-        if (fullPath.equals("")) return;
+        if (fullPath.equals("")) return false;
 
         file = new FileTTO(fullPath);
         resetControlVars();
         setTitle("Compiler - " + file.getName());
         taEdit.setText(file.load());
+
+        return true;
     }
 
     public boolean fSave() {
@@ -179,37 +185,51 @@ public class App extends JFrame {
         return true;
     }
 
-    public void fExit() {
+    public boolean fSettings() {
+        new Settings(this);
+
+        return true;
+    }
+
+    public boolean fExit() {
         if (savedFile) {
             System.exit(0);
         } else if (verifySaveFile()) {
             System.exit(0);
         }
+
+        return true;
     }
 
-    public void fCut() {
+    public boolean fCut() {
         taEdit.cut();
+
+        return true;
     }
 
-    public void fCopy() {
+    public boolean fCopy() {
         taEdit.copy();
+
+        return true;
     }
 
-    public void fPaste() {
+    public boolean fPaste() {
         taEdit.paste();
+
+        return true;
     }
 
-    public void fCompile() {
+    public boolean fCompile() {
         if (taEdit.getText().isEmpty()) {
             JOptionPane.showMessageDialog(
                     null,
                     "Your file is empty.",
                     "Warning",
                     JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
 
-        if (!fSave()) return;
+        if (!fSave()) return false;
 
         compiled = true;
         taConsole.setText(new Compiler().build(new StringReader(taEdit.getText())));
@@ -217,30 +237,38 @@ public class App extends JFrame {
         // test
 //        cAddContent("\nDigite: ");
 //        cInit();
+
+        return true;
     }
 
-    public void fRun() {
+    public boolean fRun() {
         if (!compiled) {
             JOptionPane.showMessageDialog(
                     null,
                     "Please, compile your file before running.",
                     "Warning",
                     JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
         running = true;
+
+        return true;
     }
 
-    public void fAbout() {
+    public boolean fAbout() {
         JOptionPane.showMessageDialog(
                 null,
-                "Authors: Carlos E. B. Machado, Herikc Brecher and Bruno.",
+                "Authors: Carlos E. B. Machado, Herikc Brecher and Bruno F. Francisco.",
                 "About",
                 JOptionPane.INFORMATION_MESSAGE);
+
+        return true;
     }
 
-    public void fHelp() {
+    public boolean fHelp() {
         new ShowHelp();
+
+        return true;
     }
 
     /*******************************************************************************************************************
@@ -337,6 +365,10 @@ public class App extends JFrame {
     /*******************************************************************************************************************
      * Auxiliary functions
      ******************************************************************************************************************/
+
+    public void updateSettings() {
+        taEdit.setTabSize(Settings.TAB_SIZE);
+    }
 
     public void resetControlVars() {
         resetFileVars();
