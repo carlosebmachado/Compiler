@@ -20,6 +20,7 @@ public class App extends JFrame {
     private final JTextArea taEdit;
     private final JTextArea taConsole;
     private final JLabel lblLnCol;
+    private final JLabel lblTabSize;
 
     private FileTTO file;
 
@@ -68,17 +69,16 @@ public class App extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                fExit();
+                mExit();
             }
         });
 
-        // Components
+        // Adding components
 
         // menu methods
         Supplier<?>[] menuMethods = {
-                this::fNew, this::fOpen, this::fSave, this::fSaveAs, this::fSettings, this::fExit, this::fCut,
-                this::fCopy, this::fPaste, this::fCompile, this::fRun, this::fAbout, this::fHelp
-        };
+                this::mNew, this::mOpen, this::mSave, this::mSaveAs, this::mSettings, this::mExit, this::mCut,
+                this::mCopy, this::mPaste, this::mCompile, this::mRun, this::mAbout, this::mHelp};
 
         // menu bar
         setJMenuBar(new MenuBar(menuMethods));
@@ -87,7 +87,9 @@ public class App extends JFrame {
         // status bar
         var statusBar = new StatusBar();
         lblLnCol = new JLabel("Ln 1, Col 1");
+        lblTabSize = new JLabel(Settings.TAB_SIZE + " spaces");
         statusBar.add(lblLnCol);
+        statusBar.add(lblTabSize);
         panelMain.add(statusBar, BorderLayout.SOUTH);
 
         JSplitPane splitPane = new JSplitPane();
@@ -113,7 +115,7 @@ public class App extends JFrame {
         taEdit.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                updateFile();
+                updateFileEdit();
             }
         });
         taEdit.addCaretListener(e -> updateLCLabel());
@@ -134,7 +136,7 @@ public class App extends JFrame {
      * Actions
      ******************************************************************************************************************/
 
-    public boolean fNew() {
+    public boolean mNew() {
         if (cancelSaveFileOp()) return false;
 
         file = new FileTTO();
@@ -146,7 +148,7 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fOpen() {
+    public boolean mOpen() {
         if (cancelSaveFileOp()) return false;
 
         var fullPath = getFilePath(false);
@@ -160,9 +162,9 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fSave() {
+    public boolean mSave() {
         if (newFile) {
-            return fSaveAs();
+            return mSaveAs();
         } else if (!savedFile) {
             resetFileVars();
             setTitle(getTitle().substring(0, getTitle().length() - 2));
@@ -171,7 +173,7 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fSaveAs() {
+    public boolean mSaveAs() {
         if (!savedFile) {
             var fullPath = getFilePath(true);
             if (fullPath.equals("")) return false;
@@ -184,13 +186,13 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fSettings() {
+    public boolean mSettings() {
         new Settings(this);
 
         return true;
     }
 
-    public boolean fExit() {
+    public boolean mExit() {
         if (savedFile) {
             System.exit(0);
         } else if (verifySaveFile()) {
@@ -200,25 +202,25 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fCut() {
+    public boolean mCut() {
         taEdit.cut();
 
         return true;
     }
 
-    public boolean fCopy() {
+    public boolean mCopy() {
         taEdit.copy();
 
         return true;
     }
 
-    public boolean fPaste() {
+    public boolean mPaste() {
         taEdit.paste();
 
         return true;
     }
 
-    public boolean fCompile() {
+    public boolean mCompile() {
         if (taEdit.getText().isEmpty()) {
             JOptionPane.showMessageDialog(
                     null,
@@ -228,7 +230,7 @@ public class App extends JFrame {
             return false;
         }
 
-        if (!fSave()) return false;
+        if (!mSave()) return false;
 
         compiled = true;
         taConsole.setText(new Compiler().build(new StringReader(taEdit.getText())));
@@ -240,7 +242,7 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fRun() {
+    public boolean mRun() {
         if (!compiled) {
             JOptionPane.showMessageDialog(
                     null,
@@ -254,7 +256,7 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fAbout() {
+    public boolean mAbout() {
         JOptionPane.showMessageDialog(
                 null,
                 "Authors: Carlos E. B. Machado, Herikc Brecher and Bruno F. Francisco.",
@@ -264,7 +266,7 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fHelp() {
+    public boolean mHelp() {
         new ShowHelp();
 
         return true;
@@ -331,30 +333,23 @@ public class App extends JFrame {
 
     private void updateLCLabel() {
         int caretPos = taEdit.getCaretPosition();
-        int rows = caretPos == 0 ? 1 : 0;
-        int cols;
+        long rows;
+        long cols;
 
-        for (int offset = caretPos; offset > 0; ) {
-            try {
-                offset = Utilities.getRowStart(taEdit, offset) - 1;
-            } catch (BadLocationException e1) {
-                e1.printStackTrace();
-            }
-            rows++;
-        }
+        rows = taEdit.getText().substring(0, caretPos).chars().filter(ch -> ch == '\n').count() + 1;
 
         int offset = 0;
         try {
             offset = Utilities.getRowStart(taEdit, caretPos);
-        } catch (BadLocationException e1) {
-            e1.printStackTrace();
+        } catch (BadLocationException e) {
+            e.printStackTrace();
         }
         cols = caretPos - offset + 1;
 
         lblLnCol.setText("Ln " + rows + ", Col " + cols);
     }
 
-    private void updateFile() {
+    private void updateFileEdit() {
         if (savedFile) {
             setTitle(getTitle() + "*");
         }
@@ -367,6 +362,7 @@ public class App extends JFrame {
 
     public void updateSettings() {
         taEdit.setTabSize(Settings.TAB_SIZE);
+        lblTabSize.setText(Settings.TAB_SIZE + " spaces");
     }
 
     public void resetControlVars() {
@@ -387,7 +383,7 @@ public class App extends JFrame {
                 "Save",
                 JOptionPane.YES_NO_CANCEL_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            return fSave();
+            return mSave();
         }
         return result != JOptionPane.CANCEL_OPTION;
     }
