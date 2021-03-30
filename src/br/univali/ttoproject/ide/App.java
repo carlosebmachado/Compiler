@@ -11,7 +11,6 @@ import javax.swing.text.Utilities;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class App extends JFrame {
