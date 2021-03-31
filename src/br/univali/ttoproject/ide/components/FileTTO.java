@@ -1,7 +1,6 @@
 package br.univali.ttoproject.ide.components;
 
 import java.io.*;
-import java.text.MessageFormat;
 
 import javax.swing.filechooser.FileSystemView;
 

@@ -292,7 +292,7 @@ public class App extends JFrame {
      * Auxiliary functions
      ******************************************************************************************************************/
 
-    public void getUserInput(String entry){
+    public void getUserInput(String entry) {
         Debug.print(entry);
     }
 

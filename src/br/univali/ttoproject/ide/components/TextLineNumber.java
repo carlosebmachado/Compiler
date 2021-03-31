@@ -2,6 +2,7 @@ package br.univali.ttoproject.ide.components;
 
 import java.awt.*;
 import java.beans.*;
+import java.io.Serial;
 import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -21,6 +22,7 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = 8743194483608456061L;
     public final static float LEFT = 0.0f;
     public final static float CENTER = 0.5f;
@@ -162,7 +164,6 @@ public class TextLineNumber extends JPanel implements CaretListener, DocumentLis
      *  <li>TextLineNumber.CENTER
      *  <li>TextLineNumber.RIGHT (default)
      *	</ul>
-     *  @param currentLineForeground  the Color used to render the current line
      */
     public void setDigitAlignment(float digitAlignment) {
         this.digitAlignment =

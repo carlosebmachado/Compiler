@@ -1,7 +1,5 @@
 package br.univali.ttoproject.ide.components;
 
-import br.univali.ttoproject.ide.App;
-
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

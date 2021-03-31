@@ -1,10 +1,6 @@
 package br.univali.ttoproject.ide.components;
 
-import br.univali.ttoproject.ide.App;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
