@@ -4,6 +4,7 @@ import br.univali.ttoproject.compiler.Compiler;
 import br.univali.ttoproject.ide.components.*;
 import br.univali.ttoproject.ide.components.Console;
 import br.univali.ttoproject.ide.components.MenuBar;
+import br.univali.ttoproject.ide.util.Debug;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -19,7 +20,7 @@ public class App extends JFrame {
     private JPanel panelMain;
 
     private final JTextArea taEdit;
-    private final JTextArea console;
+    private final Console console;
     private final JLabel lblLnCol;
     private final JLabel lblTabSize;
 
@@ -94,7 +95,7 @@ public class App extends JFrame {
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         panelMain.add(splitPane, BorderLayout.CENTER);
         // console
-        console = new Console();
+        console = new Console(this::getUserInput);
         var scpConsole = new JScrollPane(console);
         splitPane.setRightComponent(scpConsole);
         // editor
@@ -228,15 +229,17 @@ public class App extends JFrame {
     }
 
     public boolean mRun() {
-        if (!compiled) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Please, compile your file before running.",
-                    "Warning",
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        running = true;
+//        if (!compiled) {
+//            JOptionPane.showMessageDialog(
+//                    null,
+//                    "Please, compile your file before running.",
+//                    "Warning",
+//                    JOptionPane.ERROR_MESSAGE);
+//            return false;
+//        }
+//        running = true;
+
+        console.initDataEntry("Digite: ");
 
         return true;
     }
@@ -288,6 +291,10 @@ public class App extends JFrame {
     /*******************************************************************************************************************
      * Auxiliary functions
      ******************************************************************************************************************/
+
+    public void getUserInput(String entry){
+        Debug.print(entry);
+    }
 
     public void updateSettings() {
         taEdit.setTabSize(SettingsForm.TAB_SIZE);

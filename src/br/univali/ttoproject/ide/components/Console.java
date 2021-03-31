@@ -1,28 +1,35 @@
 package br.univali.ttoproject.ide.components;
 
+import br.univali.ttoproject.ide.App;
+
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.function.Consumer;
 
 public class Console extends JTextArea {
+
+    private final Consumer<String> method;
 
     private boolean allowConsoleInput = false;
     private int allowedCaretPosition;
     private int initialCaretPosition;
 
-    public Console() {
-        setTabSize(0);
+    public Console(Consumer<String> method) {
+        this.method = method;
+        setTabSize(4);
         setFocusTraversalKeysEnabled(false);
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                handleKey(e);
+                handleKeyTyped(e);
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                handleKeyPressed(e);
             }
         });
-    }
-
-    public String getUserInput() {
-        return "";
     }
 
     public void addContent(String content) {
@@ -34,46 +41,59 @@ public class Console extends JTextArea {
         allowConsoleInput = false;
     }
 
-    private void init() {
+    public void initDataEntry(String content) {
+        addContent(content);
         allowConsoleInput = true;
         allowedCaretPosition = getCaretPosition();
         initialCaretPosition = allowedCaretPosition;
     }
 
-    private void stop() {
+    private void stopDataEntry() {
         allowConsoleInput = false;
     }
 
-    private void handleKey(KeyEvent e) {
+    private void handleKeyTyped(KeyEvent e) {
         if (allowConsoleInput) {
             requestFocusInWindow();
 
             var keyChar = e.getKeyChar();
             var curCaretPosition = getCaretPosition();
 
-            if (keyChar == '\b') {
-                if (curCaretPosition > initialCaretPosition) {
-                    allowedCaretPosition--;
-                } else {
-                    e.consume();
-                }
-                return;
-            }
             if (keyChar == '\n') {
-                stop();
-                return;
-            }
-            if (keyChar == '\t') {
-                e.consume();
+                stopDataEntry();
+                var entry = getText().substring(initialCaretPosition);
+                entry = entry.substring(0, entry.length() - 1);
+                method.accept(entry);
                 return;
             }
 
-            if (allowedCaretPosition != curCaretPosition) {
-                e.consume();
-            } else {
+            if (curCaretPosition >= initialCaretPosition && curCaretPosition <= allowedCaretPosition) {
                 allowedCaretPosition++;
+            } else {
+                e.consume();
             }
         } else {
+            e.consume();
+        }
+    }
+
+    private void handleKeyPressed(KeyEvent e) {
+        var keyChar = e.getKeyCode();
+        var curCaretPosition = getCaretPosition();
+
+        if (keyChar == KeyEvent.VK_BACK_SPACE) {
+            if (!allowConsoleInput){
+                e.consume();
+            } else if (curCaretPosition > initialCaretPosition) {
+                allowedCaretPosition--;
+            } else {
+                e.consume();
+            }
+        } else if (keyChar == KeyEvent.VK_ENTER) {
+            if (!allowConsoleInput){
+                e.consume();
+            }
+        } else if (keyChar == KeyEvent.VK_TAB) {
             e.consume();
         }
     }
