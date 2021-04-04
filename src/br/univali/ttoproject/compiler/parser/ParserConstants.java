@@ -11,6 +11,8 @@ public interface ParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
+  int BLOCK_COMMENT = 6;
+  /** RegularExpression Id. */
   int PROGRAM = 9;
   /** RegularExpression Id. */
   int DEFINE = 10;

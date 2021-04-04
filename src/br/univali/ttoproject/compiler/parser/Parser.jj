@@ -9,7 +9,9 @@ PARSER_BEGIN(Parser)
 package br.univali.ttoproject.compiler.parser;
 
 public class Parser {
+    public Parser(){
 
+    }
 }
 
 PARSER_END(Parser)
@@ -21,10 +23,14 @@ SKIP :
 | <"\n">
 | <"\r">
 |< ":-" (~["\r", "\n"])* >
-| < "/*" > : BLOCK_COMMENT_STATE
 }
 
-<BLOCK_COMMENT_STATE> SKIP :
+
+TOKEN: {
+    <BLOCK_COMMENT: "/*"> : BLOCK_COMMENT_STATE
+}
+
+<BLOCK_COMMENT_STATE> TOKEN :
 {
   < "*/" > : DEFAULT
 | < ~[] >

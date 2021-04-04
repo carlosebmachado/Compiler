@@ -21,20 +21,42 @@ public class Compiler {
     public String build(Reader reader) {
         parser = new Parser(reader);
         var strTokenizer = "";
+        boolean startedBlockComment = false;
+        Token startedBlockCommentToken = null;
 
         try {
             var tokens = tokenize();
 
             for (Token token : tokens) {
-                if (ParserConstants.tokenImage[token.kind] == "<UNKNOWN>") {
-                    strTokenizer += "Lexical error at line " + token.beginLine + ", column " + token.beginColumn
-                            + ". The following character '" + token.image + "' is invalid.\n\n";
-                } else {
-                    strTokenizer += token.toString();
+                if(!startedBlockComment) {
+                    if (token.image.equals("/*")) {
+                        startedBlockComment = true;
+                        startedBlockCommentToken = token;
+                    }
                 }
+
+                if(!startedBlockComment) {
+                    if (ParserConstants.tokenImage[token.kind] == "<UNKNOWN>") {
+                        strTokenizer += "Lexical error at line " + token.beginLine + ", column " + token.beginColumn
+                                + ". The following character '" + token.image + "' is invalid.\n\n";
+                    } else {
+                        strTokenizer += token.toString();
+                    }
+                }
+
+                if(startedBlockComment) {
+                    if (token.image.equals("*/"))
+                        startedBlockComment = false;
+                }
+
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+
+        if(startedBlockComment){
+            strTokenizer += "Comment not finished at line " + startedBlockCommentToken.beginLine + ", column " + startedBlockCommentToken.beginColumn
+                    + ".\n\n";
         }
 
         return strTokenizer;
