@@ -7,7 +7,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-public class Settings extends JFrame {
+public class SettingsForm extends JFrame {
 
     private JPanel panelMain;
     private JList listOptionsMenu;
@@ -16,12 +16,12 @@ public class Settings extends JFrame {
 
     public static int TAB_SIZE = 4;
 
-    public Settings(App app) {
+    public SettingsForm(App app) {
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setResizable(false);
         setTitle("Settings");
-        setIconImage(Toolkit.getDefaultToolkit().getImage(Settings.class.getResource("/img/icon.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(SettingsForm.class.getResource("/img/icon.png")));
         setVisible(true);
         setBounds(0, 0, 450, 300);
         setLocationRelativeTo(null);

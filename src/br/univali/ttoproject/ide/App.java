@@ -2,7 +2,9 @@ package br.univali.ttoproject.ide;
 
 import br.univali.ttoproject.compiler.Compiler;
 import br.univali.ttoproject.ide.components.*;
+import br.univali.ttoproject.ide.components.Console;
 import br.univali.ttoproject.ide.components.MenuBar;
+import br.univali.ttoproject.ide.util.Debug;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -18,8 +20,9 @@ public class App extends JFrame {
     private JPanel panelMain;
 
     private final JTextArea taEdit;
-    private final JTextArea taConsole;
+    private final Console console;
     private final JLabel lblLnCol;
+    private final JLabel lblTabSize;
 
     private FileTTO file;
 
@@ -28,10 +31,6 @@ public class App extends JFrame {
 
     private boolean compiled = false;
     private boolean running = false;
-
-    private boolean allowConsoleInput = false;
-    private int allowedCaretPosition;
-    private int initialCaretPosition;
 
     public static void main(String[] args) {
         try {
@@ -68,17 +67,16 @@ public class App extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                fExit();
+                mExit();
             }
         });
 
-        // Components
+        // Adding components
 
         // menu methods
         Supplier<?>[] menuMethods = {
-                this::fNew, this::fOpen, this::fSave, this::fSaveAs, this::fSettings, this::fExit, this::fCut,
-                this::fCopy, this::fPaste, this::fCompile, this::fRun, this::fAbout, this::fHelp
-        };
+                this::mNew, this::mOpen, this::mSave, this::mSaveAs, this::mSettings, this::mExit, this::mCut,
+                this::mCopy, this::mPaste, this::mCompile, this::mRun, this::mAbout, this::mHelp};
 
         // menu bar
         setJMenuBar(new MenuBar(menuMethods));
@@ -87,41 +85,35 @@ public class App extends JFrame {
         // status bar
         var statusBar = new StatusBar();
         lblLnCol = new JLabel("Ln 1, Col 1");
+        lblTabSize = new JLabel(SettingsForm.TAB_SIZE + " spaces");
         statusBar.add(lblLnCol);
+        statusBar.add(lblTabSize);
         panelMain.add(statusBar, BorderLayout.SOUTH);
-
-        JSplitPane splitPane = new JSplitPane();
+        // split pane (up: editor down: console)
+        var splitPane = new JSplitPane();
         splitPane.setResizeWeight(0.8);
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         panelMain.add(splitPane, BorderLayout.CENTER);
-
-        taConsole = new JTextArea();
-        taConsole.setTabSize(4);
-        taConsole.setFocusTraversalKeysEnabled(false);
-        taConsole.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                cHandleKey(e);
-            }
-        });
-        JScrollPane scpConsole = new JScrollPane(taConsole);
+        // console
+        console = new Console(this::getUserInput);
+        var scpConsole = new JScrollPane(console);
         splitPane.setRightComponent(scpConsole);
-
+        // editor
         taEdit = new JTextArea();
         taEdit.setTabSize(4);
         taEdit.setFont(new Font("Consolas", Font.PLAIN, 14));
         taEdit.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                updateFile();
+                updateFileEdit();
             }
         });
         taEdit.addCaretListener(e -> updateLCLabel());
 
-        JScrollPane scpEdit = new JScrollPane(taEdit);
+        var scpEdit = new JScrollPane(taEdit);
         splitPane.setLeftComponent(scpEdit);
 
-        TextLineNumber tln = new TextLineNumber(taEdit);
+        var tln = new TextLineNumber(taEdit);
         scpEdit.setRowHeaderView(tln);
         scpEdit.setViewportView(taEdit);
 
@@ -134,7 +126,7 @@ public class App extends JFrame {
      * Actions
      ******************************************************************************************************************/
 
-    public boolean fNew() {
+    public boolean mNew() {
         if (cancelSaveFileOp()) return false;
 
         file = new FileTTO();
@@ -146,7 +138,7 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fOpen() {
+    public boolean mOpen() {
         if (cancelSaveFileOp()) return false;
 
         var fullPath = getFilePath(false);
@@ -160,9 +152,9 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fSave() {
+    public boolean mSave() {
         if (newFile) {
-            return fSaveAs();
+            return mSaveAs();
         } else if (!savedFile) {
             resetFileVars();
             setTitle(getTitle().substring(0, getTitle().length() - 2));
@@ -171,7 +163,7 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fSaveAs() {
+    public boolean mSaveAs() {
         if (!savedFile) {
             var fullPath = getFilePath(true);
             if (fullPath.equals("")) return false;
@@ -184,13 +176,13 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fSettings() {
-        new Settings(this);
+    public boolean mSettings() {
+        new SettingsForm(this);
 
         return true;
     }
 
-    public boolean fExit() {
+    public boolean mExit() {
         if (savedFile) {
             System.exit(0);
         } else if (verifySaveFile()) {
@@ -200,25 +192,25 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fCut() {
+    public boolean mCut() {
         taEdit.cut();
 
         return true;
     }
 
-    public boolean fCopy() {
+    public boolean mCopy() {
         taEdit.copy();
 
         return true;
     }
 
-    public boolean fPaste() {
+    public boolean mPaste() {
         taEdit.paste();
 
         return true;
     }
 
-    public boolean fCompile() {
+    public boolean mCompile() {
         if (taEdit.getText().isEmpty()) {
             JOptionPane.showMessageDialog(
                     null,
@@ -228,29 +220,31 @@ public class App extends JFrame {
             return false;
         }
 
-        if (!fSave()) return false;
+        if (!mSave()) return false;
 
         compiled = true;
-        taConsole.setText(new Compiler().build(new StringReader(taEdit.getText())));
+        console.setText(new Compiler().build(new StringReader(taEdit.getText())));
 
         return true;
     }
 
-    public boolean fRun() {
-        if (!compiled) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Please, compile your file before running.",
-                    "Warning",
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        running = true;
+    public boolean mRun() {
+//        if (!compiled) {
+//            JOptionPane.showMessageDialog(
+//                    null,
+//                    "Please, compile your file before running.",
+//                    "Warning",
+//                    JOptionPane.ERROR_MESSAGE);
+//            return false;
+//        }
+//        running = true;
+
+        console.initDataEntry("Digite: ");
 
         return true;
     }
 
-    public boolean fAbout() {
+    public boolean mAbout() {
         JOptionPane.showMessageDialog(
                 null,
                 "Authors: Carlos E. B. Machado, Herikc Brecher and Bruno F. Francisco.",
@@ -260,8 +254,8 @@ public class App extends JFrame {
         return true;
     }
 
-    public boolean fHelp() {
-        new ShowHelp();
+    public boolean mHelp() {
+        new HelpForm();
 
         return true;
     }
@@ -269,88 +263,25 @@ public class App extends JFrame {
     /*******************************************************************************************************************
      * UI controls
      ******************************************************************************************************************/
-    private void cHandleKey(KeyEvent e) {
-        if (allowConsoleInput) {
-            cUserInput(e);
-        } else {
-            e.consume();
-        }
-    }
-
-    private void cInit() {
-        allowConsoleInput = true;
-        allowedCaretPosition = taConsole.getCaretPosition();
-        initialCaretPosition = allowedCaretPosition;
-    }
-
-    private void cStop() {
-        allowConsoleInput = false;
-    }
-
-    private void cReset() {
-        taConsole.setText("");
-    }
-
-    private void cAddContent(String content) {
-        taConsole.setText(taConsole.getText() + content);
-    }
-
-    private void cUserInput(KeyEvent e) {
-        taConsole.requestFocusInWindow();
-
-        var keyChar = e.getKeyChar();
-        var curCaretPosition = taConsole.getCaretPosition();
-
-        if (keyChar == '\b') {
-            if (curCaretPosition > initialCaretPosition) {
-                allowedCaretPosition--;
-            } else {
-                e.consume();
-            }
-            return;
-        }
-        if (keyChar == '\n') {
-            cStop();
-            return;
-        }
-        if (keyChar == '\t') {
-            e.consume();
-            return;
-        }
-
-        if (allowedCaretPosition != curCaretPosition) {
-            e.consume();
-        } else {
-            allowedCaretPosition++;
-        }
-    }
-
     private void updateLCLabel() {
         int caretPos = taEdit.getCaretPosition();
-        int rows = caretPos == 0 ? 1 : 0;
-        int cols;
+        long rows;
+        long cols;
 
-        for (int offset = caretPos; offset > 0; ) {
-            try {
-                offset = Utilities.getRowStart(taEdit, offset) - 1;
-            } catch (BadLocationException e1) {
-                e1.printStackTrace();
-            }
-            rows++;
-        }
+        rows = taEdit.getText().substring(0, caretPos).chars().filter(ch -> ch == '\n').count() + 1;
 
         int offset = 0;
         try {
             offset = Utilities.getRowStart(taEdit, caretPos);
-        } catch (BadLocationException e1) {
-            e1.printStackTrace();
+        } catch (BadLocationException e) {
+            e.printStackTrace();
         }
         cols = caretPos - offset + 1;
 
         lblLnCol.setText("Ln " + rows + ", Col " + cols);
     }
 
-    private void updateFile() {
+    private void updateFileEdit() {
         if (savedFile) {
             setTitle(getTitle() + "*");
         }
@@ -361,8 +292,13 @@ public class App extends JFrame {
      * Auxiliary functions
      ******************************************************************************************************************/
 
+    public void getUserInput(String entry) {
+        Debug.print(entry);
+    }
+
     public void updateSettings() {
-        taEdit.setTabSize(Settings.TAB_SIZE);
+        taEdit.setTabSize(SettingsForm.TAB_SIZE);
+        lblTabSize.setText(SettingsForm.TAB_SIZE + " spaces");
     }
 
     public void resetControlVars() {
@@ -383,7 +319,7 @@ public class App extends JFrame {
                 "Save",
                 JOptionPane.YES_NO_CANCEL_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            return fSave();
+            return mSave();
         }
         return result != JOptionPane.CANCEL_OPTION;
     }

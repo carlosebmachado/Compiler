@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 public class MenuBar extends JMenuBar {
 
-    public MenuBar(Supplier<?>[] methods){
+    public MenuBar(Supplier<?>[] methods) {
         var mnFile = new JMenu("File");
         add(mnFile);
 

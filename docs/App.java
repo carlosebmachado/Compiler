@@ -9,7 +9,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Utilities;
 
 import br.univali.ttoproject.compiler.Compiler;
-import br.univali.ttoproject.ide.components.ShowHelp;
 import br.univali.ttoproject.ide.components.TextLineNumber;
 import br.univali.ttoproject.ide.core.FileTTO;
 
@@ -129,7 +128,7 @@ public class App extends JFrame {
         JMenuItem mntmNew = new JMenuItem("New");
         mntmNew.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fNew();
+                mNew();
             }
         });
         mntmNew.setIcon(new ImageIcon(App.class.getResource("/img/New File.png")));
@@ -138,7 +137,7 @@ public class App extends JFrame {
         JMenuItem mntmOpen = new JMenuItem("Open");
         mntmOpen.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fOpen();
+                mOpen();
             }
         });
         mntmOpen.setIcon(new ImageIcon(App.class.getResource("/img/Open Project.png")));
@@ -147,7 +146,7 @@ public class App extends JFrame {
         JMenuItem mntmSave = new JMenuItem("Save");
         mntmSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fSave();
+                mSave();
             }
         });
         mntmSave.setIcon(new ImageIcon(App.class.getResource("/img/Save File.png")));
@@ -156,7 +155,7 @@ public class App extends JFrame {
         JMenuItem mntmSaveAs = new JMenuItem("Save as...");
         mntmSaveAs.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fSaveAs();
+                mSaveAs();
             }
         });
         mnFile.add(mntmSaveAs);
@@ -178,7 +177,7 @@ public class App extends JFrame {
         JMenuItem mntmCut = new JMenuItem("Cut");
         mntmCut.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fCut();
+                mCut();
             }
         });
         mntmCut.setIcon(new ImageIcon(App.class.getResource("/img/Cut.PNG")));
@@ -187,7 +186,7 @@ public class App extends JFrame {
         JMenuItem mntmCopy = new JMenuItem("Copy");
         mntmCopy.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fCopy();
+                mCopy();
             }
         });
         mntmCopy.setIcon(new ImageIcon(App.class.getResource("/img/Copy.PNG")));
@@ -196,7 +195,7 @@ public class App extends JFrame {
         JMenuItem mntmPaste = new JMenuItem("Paste");
         mntmPaste.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fPaste();
+                mPaste();
             }
         });
         mntmPaste.setIcon(new ImageIcon(App.class.getResource("/img/Paste.png")));
@@ -208,7 +207,7 @@ public class App extends JFrame {
         JMenuItem mntmCompile = new JMenuItem("Compile");
         mntmCompile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fCompile();
+                mCompile();
             }
         });
         mntmCompile.setIcon(new ImageIcon(App.class.getResource("/img/Cog.png")));
@@ -217,7 +216,7 @@ public class App extends JFrame {
         JMenuItem mntmRun = new JMenuItem("Run");
         mntmRun.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fRun();
+                mRun();
             }
         });
         mntmRun.setIcon(new ImageIcon(App.class.getResource("/img/Run .PNG")));
@@ -229,7 +228,7 @@ public class App extends JFrame {
         JMenuItem mntmNewMenuItem = new JMenuItem("Show help");
         mntmNewMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fHelp();
+                mHelp();
             }
         });
         mnAbout.add(mntmNewMenuItem);
@@ -237,7 +236,7 @@ public class App extends JFrame {
         JMenuItem mntmNewMenuItem_1 = new JMenuItem("About");
         mntmNewMenuItem_1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fAbout();
+                mAbout();
             }
         });
         mnAbout.add(mntmNewMenuItem_1);
@@ -253,7 +252,7 @@ public class App extends JFrame {
         JButton btnNew = new JButton("");
         btnNew.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fNew();
+                mNew();
             }
         });
         btnNew.setIcon(new ImageIcon(App.class.getResource("/img/New File.png")));
@@ -262,7 +261,7 @@ public class App extends JFrame {
         JButton btnOpen = new JButton("");
         btnOpen.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fOpen();
+                mOpen();
             }
         });
         btnOpen.setIcon(new ImageIcon(App.class.getResource("/img/Open Project.png")));
@@ -271,7 +270,7 @@ public class App extends JFrame {
         JButton btnSave = new JButton("");
         btnSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fSave();
+                mSave();
             }
         });
         btnSave.setIcon(new ImageIcon(App.class.getResource("/img/Save File.png")));
@@ -285,7 +284,7 @@ public class App extends JFrame {
         JButton btnCut = new JButton("");
         btnCut.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fCut();
+                mCut();
             }
         });
         btnCut.setIcon(new ImageIcon(App.class.getResource("/img/Cut.PNG")));
@@ -294,7 +293,7 @@ public class App extends JFrame {
         JButton btnCopy = new JButton("");
         btnCopy.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fCopy();
+                mCopy();
             }
         });
         btnCopy.setIcon(new ImageIcon(App.class.getResource("/img/Copy.PNG")));
@@ -303,7 +302,7 @@ public class App extends JFrame {
         JButton btnPaste = new JButton("");
         btnPaste.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fPaste();
+                mPaste();
             }
         });
         btnPaste.setIcon(new ImageIcon(App.class.getResource("/img/Paste.png")));
@@ -317,7 +316,7 @@ public class App extends JFrame {
         JButton btnBuild = new JButton("");
         btnBuild.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fCompile();
+                mCompile();
             }
         });
         btnBuild.setIcon(new ImageIcon(App.class.getResource("/img/Cog.png")));
@@ -326,7 +325,7 @@ public class App extends JFrame {
         JButton btnRun = new JButton("");
         btnRun.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fRun();
+                mRun();
             }
         });
         btnRun.setIcon(new ImageIcon(App.class.getResource("/img/Run .PNG")));
@@ -418,7 +417,7 @@ public class App extends JFrame {
 
     public boolean fSave() {
         if (newFile) {
-            return fSaveAs();
+            return mSaveAs();
         } else if (!savedFile) {
             resetFileVars();
             setTitle(getTitle().substring(0, getTitle().length() - 2));
@@ -553,7 +552,7 @@ public class App extends JFrame {
         int result = JOptionPane.showConfirmDialog(null, "Would you like to save the file?", "Save",
                 JOptionPane.YES_NO_CANCEL_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            return fSave();
+            return mSave();
         }
         if (result == JOptionPane.NO_OPTION) {
 
