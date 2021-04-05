@@ -21,13 +21,17 @@ SKIP :
 | <"\n">
 | <"\r">
 |< ":-" (~["\r", "\n"])* >
-| < "/*" > : BLOCK_COMMENT_STATE
 }
 
-<BLOCK_COMMENT_STATE> SKIP :
-{
-  < "*/" > : DEFAULT
-| < ~[] >
+SKIP: { <"/*"> : BLOCK_COMMENT_STATE}
+<BLOCK_COMMENT_STATE> SKIP: { "*/" : DEFAULT  }
+<BLOCK_COMMENT_STATE> SKIP: { < ~[] > }
+
+<*> TOKEN : { <EOF> {
+    if(curLexState == BLOCK_COMMENT_STATE) {
+       throw new Error("Unmatched comment at line " + matchedToken.beginLine + ", column " + matchedToken.beginColumn + ".");
+    }
+  }
 }
 
 /* KEY WORDS */
