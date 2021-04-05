@@ -47,4 +47,8 @@ public class CategorizedToken extends Token {
                 "   endColumn = " + endColumn + "\n" +
                 "}\n";
     }
+
+    public boolean isUnknownKind() {
+        return kind == ParserConstants.UNKNOWN;
+    }
 }

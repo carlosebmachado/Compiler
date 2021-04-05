@@ -233,10 +233,6 @@ public class App extends JFrame {
         compiled = true;
         taConsole.setText(new Compiler().build(new StringReader(taEdit.getText())));
 
-        // test
-//        cAddContent("\nDigite: ");
-//        cInit();
-
         return true;
     }
 
