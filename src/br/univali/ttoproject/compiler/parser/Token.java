@@ -148,7 +148,7 @@ public class Token implements java.io.Serializable {
             case ParserConstants.REAL_UNSIGNED:
             case ParserConstants.REAL_SIGNED:
                 return new CategorizedToken(TokenCategory.RealConstant, ofKind, image);
-            case ParserConstants.STRING:
+            case ParserConstants.CHAR_CONST:
                 return new CategorizedToken(TokenCategory.LiteralConstant, ofKind, image);
             case ParserConstants.EOF:
             case ParserConstants.LBRACE:

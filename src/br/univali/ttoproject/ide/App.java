@@ -233,17 +233,17 @@ public class App extends JFrame {
     }
 
     public boolean mRun() {
-//        if (!compiled) {
-//            JOptionPane.showMessageDialog(
-//                    null,
-//                    "Please, compile your file before running.",
-//                    "Warning",
-//                    JOptionPane.ERROR_MESSAGE);
-//            return false;
-//        }
-//        running = true;
+        if (!compiled) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Please, compile your file before running.",
+                    "Warning",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        running = true;
 
-        console.initDataEntry("Digite: ");
+        //console.initDataEntry("Digite: ");
 
         return true;
     }

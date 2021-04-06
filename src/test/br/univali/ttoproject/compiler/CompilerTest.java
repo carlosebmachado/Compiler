@@ -173,7 +173,7 @@ public class CompilerTest {
                         Arrays.asList(
                                 new CategorizedToken(TokenCategory.RealConstant, ParserConstants.REAL_SIGNED, "-3.14", 1, 1, 1, 5))),
                 new TestCase("\"hello world\"", Arrays.asList(new CategorizedToken(TokenCategory.LiteralConstant,
-                        ParserConstants.STRING, "\"hello world\"", 1, 1, 1, 13))));
+                        ParserConstants.CHAR_CONST, "\"hello world\"", 1, 1, 1, 13))));
 
         for (TestCase testCase : testCases) {
             var compiler = new Compiler();
