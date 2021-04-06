@@ -101,7 +101,7 @@ public class App extends JFrame {
         // editor
         taEdit = new JTextArea();
         taEdit.setTabSize(4);
-        if (System.getProperty("os.name").toLowerCase().equals("win")) {
+        if (System.getProperty("os.name").substring(0, 3).equalsIgnoreCase("win")) {
             taEdit.setFont(new Font("Consolas", Font.PLAIN, 14));
         } else {
             taEdit.setFont(new Font("FreeMono", Font.PLAIN, 15));

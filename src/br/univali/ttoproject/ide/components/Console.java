@@ -54,22 +54,12 @@ public class Console extends JTextArea {
         if (allowConsoleInput) {
             requestFocusInWindow();
 
-            var keyChar = e.getKeyChar();
             var curCaretPosition = getCaretPosition();
 
-            if (keyChar == '\n') {
-                stopDataEntry();
-                var entry = getText().substring(initialCaretPosition);
-                entry = entry.substring(0, entry.length() - 1);
-                method.accept(entry);
-                return;
+            if (curCaretPosition < initialCaretPosition || curCaretPosition > allowedCaretPosition) {
+                setCaretPosition(allowedCaretPosition);
             }
-
-            if (curCaretPosition >= initialCaretPosition && curCaretPosition <= allowedCaretPosition) {
-                allowedCaretPosition++;
-            } else {
-                e.consume();
-            }
+            allowedCaretPosition++;
         } else {
             e.consume();
         }
@@ -88,8 +78,11 @@ public class Console extends JTextArea {
                 e.consume();
             }
         } else if (keyChar == KeyEvent.VK_ENTER) {
-            if (!allowConsoleInput){
-                e.consume();
+            e.consume();
+            if (allowConsoleInput){
+                stopDataEntry();
+                method.accept(getText().substring(initialCaretPosition));
+                setCaretPosition(getText().length());
             }
         } else if (keyChar == KeyEvent.VK_TAB) {
             e.consume();
