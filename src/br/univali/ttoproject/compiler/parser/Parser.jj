@@ -8,106 +8,450 @@ PARSER_BEGIN(Parser)
 
 package br.univali.ttoproject.compiler.parser;
 
-public class Parser {
 
+import br.univali.ttoproject.compiler.*;
+import br.univali.ttoproject.vm.*;
+import java.awt.*;import java.util.ArrayList;
+
+public class Parser {
+    private String errorMessages = "";
+    private SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
+
+    public String getErrorMessages() {
+        return errorMessages;
+    }
+
+    public SemanticAnalysis getSemanticAnalysis() {
+        return semanticAnalysis;
+    }
 }
 
 PARSER_END(Parser)
 
 SKIP :
 {
-  <" ">
-| <"\t">
-| <"\n">
-| <"\r">
-|< ":-" (~["\r", "\n"])* >
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
 }
 
-SKIP: { <"/*"> : BLOCK_COMMENT_STATE}
+SKIP: { "/*" : BLOCK_COMMENT_STATE}
 <BLOCK_COMMENT_STATE> SKIP: { "*/" : DEFAULT  }
 <BLOCK_COMMENT_STATE> SKIP: { < ~[] > }
 
-<*> TOKEN : { <EOF> {
-    if(curLexState == BLOCK_COMMENT_STATE) {
-       throw new Error("Unmatched comment at line " + matchedToken.beginLine + ", column " + matchedToken.beginColumn + ".");
+<*> TOKEN :
+{
+    <EOF>
+    {
+        if (curLexState == BLOCK_COMMENT_STATE) {
+            throw new Error("Unmatched comment at line " + matchedToken.beginLine + ", column " + matchedToken.beginColumn + ".");
+        }
     }
-  }
 }
 
 /* KEY WORDS */
 TOKEN [IGNORE_CASE]:
 {
-  <PROGRAM: "program">
-| <DEFINE: "define">
-| <NOT: "not">
-| <VARIABLE: "variable">
-| <IS: "is">
-| <NATURAL: "natural">
-| <REAL: "real">
-| <CHAR: "char">
-| <BOOLEAN: "boolean">
-| <EXECUTE: "execute">
-| <SET: "set">
-| <TO: "to">
-| <GET: "get">
-| <PUT: "put">
-| <VERIFY: "verify">
-| <TRUE: "true">
-| <FALSE: "false">
-| <LOOP: "loop">
-| <WHILE: "while">
-| <DO: "do">
+    <PROGRAM: "program">
+|   <DEFINE: "define">
+|   <NOT: "not">
+|   <VARIABLE: "variable">
+|   <IS: "is">
+|   <NATURAL_TYPE: "natural">
+|   <REAL_TYPE: "real">
+|   <CHAR_TYPE: "char">
+|   <BOOLEAN_TYPE: "boolean">
+|   <EXECUTE: "execute">
+|   <SET: "set">
+|   <TO: "to">
+|   <GET: "get">
+|   <PUT: "put">
+|   <VERIFY: "verify">
+|   <LOOP: "loop">
+|   <WHILE: "while">
+|   <DO: "do">
 }
 
 /* SPECIAL SYMBOLS */
 TOKEN :
 {
-  <LBRACE: "{">
-| <RBRACE: "}">
-| <PARENTHESESL: "(">
-| <PARANTHESESR: ")">
-| <DOT: ".">
-| <COMMA: ",">
-| <PLUS: "+">
-| <MINUS: "-">
-| <POWER: "**">
-| <MULTIPLICATION: "*">
-| <DIVISION: "/">
-| <INTEGER_DIVISION: "%">
-| <REST: "%%">
-| <EQUAL: "==">
-| <DIFFERENT: "!=">
-| <SMALLER: "<">
-| <LARGER: ">">
-| <SMALLER_EQUAL: "<=">
-| <LARGER_EQUAL: ">=">
-| <AND: "&">
-| <OR: "|">
-| <NOT_SYMBOL: "!">
+    <HEADER: ":-">
+|   <LBRACE: "{">
+|   <RBRACE: "}">
+|   <LBRACKET: "[">
+|   <RBRACKET: "]">
+|   <LPARENTHESES: "(">
+|   <RPARANTHESES: ")">
+|   <DOT: ".">
+|   <COMMA: ",">
+|   <PLUS: "+">
+|   <MINUS: "-">
+|   <POWER: "**">
+|   <MULTIPLICATION: "*">
+|   <DIVISION: "/">
+|   <INTEGER_DIVISION: "%">
+|   <REST: "%%">
+|   <EQUAL: "==">
+|   <DIFFERENT: "!=">
+|   <SMALLER: "<">
+|   <GREATER: ">">
+|   <SMALLER_EQUAL: "<=">
+|   <GREATER_EQUAL: ">=">
+|   <AND: "&">
+|   <OR: "|">
+|   <NOT_SYMBOL: "!">
 }
 
-/* IDENTIFIERS */
+/* CONSTS AND IDENTIFIER */
 TOKEN :
 {
-    <IDENTIFIER: ("_"|<LETTER>) ("_"|<LETTER>|<UNSIGNED>)+>
+    <CHAR_CONST: "\"" (~["\"","\\","\n","\r"] | "\\"(["n","t","b","r","\\","'","\""]))* "\""
+               | "\'" (~["\'","\\","\n","\r"] | "\\"(["n","t","b","r","\\","'","\""]))* "\'">
+|   <NATURAL_CONST: <DIGIT> (<DIGIT>)? (<DIGIT>)?>
+|   <REAL_CONST: <DIGIT> (<DIGIT>)? (<DIGIT>)? (<DIGIT>)? (<DIGIT>)?  "." <DIGIT> (<DIGIT>)?>
+|   <TRUE: "true">
+|   <FALSE: "false">
+|   <IDENTIFIER: <ND>|(("_"<NU>|<LETTER>) (<NU>|"_"<NU>)* (<LETTER>|<DIGIT><ND>|<LETTER>"_"|"_"<LETTER>|"_"))>
 }
 
-/* CONSTS */
-TOKEN :
-{
-    <CHAR_CONST : "\"" ((~["\"","\\","\n","\r"]) |("\\" (["n","t","v","b","r","f","a","\\","?","'","\""])))* "\"">
-|   <NATURAL_CONST: <UNSIGNED>|<SIGNED>>
-|   <REAL_CONST: <REAL_SIGNED>|<REAL_UNSIGNED>>
-|   <BOOLEAN_CONST: "true"|"false">
-}
-
+/* RAW */
 TOKEN :
 {
     <LETTER: ["a"-"z","A"-"Z"]>
-|   <UNSIGNED: (["0" - "9"])+>
-|   <SIGNED: ("-"|"+") (["0" - "9"])+>
-|   <REAL_UNSIGNED: <UNSIGNED>"."<UNSIGNED>>
-|   <REAL_SIGNED: <SIGNED>"."<UNSIGNED>>
+|   <DIGIT: ["0"-"9"]>
+|   <NU: <LETTER>|<DIGIT><ND>>
+|   <ND: <LETTER>|"_">
 }
 
-<*> TOKEN : { <UNKNOWN: ~[]> }
+<*> TOKEN : { <UNKNOWN: ~[" ","\t","\n","\r"]> }
+
+
+
+void Start() :
+{}
+{
+    Program() <EOF>
+}
+
+void Program() :
+{}
+{
+    Header() <PROGRAM> <LBRACE> Define() Execute() <RBRACE> ProgramIdentifier() { semanticAnalysis.action1(); }
+}
+
+void Header() :
+{}
+{
+    <HEADER> <CHAR_CONST>
+|   Epsilon()
+}
+
+void ProgramIdentifier() :
+{}
+{
+    <IDENTIFIER> { semanticAnalysis.action2(token.image); }
+|   Epsilon()
+}
+
+void Define() :
+{}
+{
+    <DEFINE> <LBRACE> DefineBlock() <RBRACE>
+|   Epsilon()
+}
+
+void DefineBlock() :
+{}
+{
+    NotVariable() VariableSel()
+|   Variable() NotVariableSel()
+}
+
+void NotVariable() :
+{}
+{
+    <NOT> <VARIABLE> { semanticAnalysis.action3(); } NotVariableList()
+}
+
+void NotVariableList() :
+{}
+{
+    Type() <IS> NotVariableIdentifierList() { semanticAnalysis.action4(); } Value() { semanticAnalysis.action5(token.image); } <DOT> NotVariableListSel()
+}
+
+void NotVariableListSel() :
+{}
+{
+    NotVariableList()
+|   Epsilon()
+}
+
+void NotVariableSel() :
+{}
+{
+    NotVariable()
+|   Epsilon()
+}
+
+void Variable() :
+{}
+{
+    <VARIABLE> { semanticAnalysis.action6(); } VariableList()
+}
+
+void VariableList() :
+{}
+{
+    Type() <IS> VariableIdentifierList() { semanticAnalysis.action4(); } <DOT> VariableListSel()
+}
+
+void VariableListSel() :
+{}
+{
+    VariableList()
+|   Epsilon()
+}
+
+void VariableSel() :
+{}
+{
+    Variable()
+|   Epsilon()
+}
+
+void Type() :
+{}
+{
+    <NATURAL_TYPE> { semanticAnalysis.action7(); }
+|   <REAL_TYPE> { semanticAnalysis.action8(); }
+|   <CHAR_TYPE> { semanticAnalysis.action9(); }
+|   <BOOLEAN_TYPE> { errorMessages += semanticAnalysis.action10(); }
+}
+
+void NotVariableIdentifierList() :
+{}
+{
+    <IDENTIFIER> { errorMessages += semanticAnalysis.action11(token.image); } NotVariableIdentifierListSel()
+}
+
+void NotVariableIdentifierListSel() :
+{}
+{
+    <COMMA> NotVariableIdentifierList()
+|   Epsilon()
+}
+
+void VariableIdentifierList() :
+{}
+{
+    <IDENTIFIER> { errorMessages += semanticAnalysis.action12(token.image); } Index() { errorMessages += semanticAnalysis.action13(); } VariableIdentifierListSel()
+}
+
+void VariableIdentifierListSel() :
+{}
+{
+    <COMMA> VariableIdentifierList()
+|   Epsilon()
+}
+
+void Index() :
+{}
+{
+    <LBRACKET> <NATURAL_CONST> { semanticAnalysis.action14(token.image); } <RBRACKET>
+|   Epsilon()
+}
+
+void Value() :
+{}
+{
+    <NATURAL_CONST>
+|   <REAL_CONST>
+|   <CHAR_CONST>
+}
+
+void Execute() :
+{}
+{
+    <EXECUTE> <LBRACE> CommandList() <RBRACE>
+}
+
+void CommandList() :
+{}
+{
+    Command() <DOT> CommandListSel()
+}
+
+void CommandListSel() :
+{}
+{
+    CommandList()
+|   Epsilon()
+}
+
+void Command() :
+{}
+{
+    Set()
+|   Get()
+|   Put()
+|   Verify()
+|   Loop()
+}
+
+void Set() :
+{}
+{
+    <SET> { semanticAnalysis.action15(); } Expression() <TO> VariableIdentifierList() { semanticAnalysis.action16(); }
+}
+
+void Get() :
+{}
+{
+    <GET> { semanticAnalysis.action17(); } <LBRACE> VariableIdentifierList() <RBRACE>
+}
+
+void Put() :
+{}
+{
+    <PUT> <LBRACE> IdentifierListOrConstants() <RBRACE>
+}
+
+void IdentifierListOrConstants() :
+{}
+{
+    Item() { semanticAnalysis.action18(); } IdentifierListOrConstsSel()
+}
+
+void IdentifierListOrConstsSel() :
+{}
+{
+    <COMMA> IdentifierListOrConstants()
+|   Epsilon()
+}
+
+void Item() :
+{}
+{
+    <IDENTIFIER> { errorMessages += semanticAnalysis.action19(token.image); } Index() { errorMessages += semanticAnalysis.action20(); }
+|   <NATURAL_CONST> { semanticAnalysis.action21(token.image); }
+|   <REAL_CONST> { semanticAnalysis.action22(token.image); }
+|   <CHAR_CONST> { semanticAnalysis.action23(token.image); }
+}
+
+void Verify() :
+{}
+{
+    <VERIFY> Expression() <IS> Clauses() { semanticAnalysis.action24(); }
+}
+
+void Clauses() :
+{}
+{
+    <TRUE> { semanticAnalysis.action25(); } <LBRACE> CommandList() <RBRACE> IsFalse()
+|   <FALSE> { semanticAnalysis.action26(); } <LBRACE> CommandList() <RBRACE> IsTrue()
+}
+
+void IsTrue() :
+{}
+{
+    <IS> <TRUE> { semanticAnalysis.action27(); } <LBRACE> CommandList() <RBRACE>
+|   Epsilon()
+}
+
+void IsFalse() :
+{}
+{
+    <IS> <FALSE> { semanticAnalysis.action27(); } <LBRACE> CommandList() <RBRACE>
+|   Epsilon()
+}
+
+void Loop() :
+{}
+{
+    <LOOP> { semanticAnalysis.action28(); } <LBRACE> CommandList() <RBRACE> <WHILE> Expression() { semanticAnalysis.action29(); } <IS> <TRUE>
+|   <WHILE> { semanticAnalysis.action30(); } Expression() { semanticAnalysis.action31(); } <IS> <TRUE> <DO> <LBRACE> CommandList() <RBRACE> { semanticAnalysis.action32(); }
+}
+
+void Expression() :
+{}
+{
+    ExprArithLogic() ExpressionSel()
+}
+
+void ExpressionSel() :
+{}
+{
+    <EQUAL> ExprArithLogic() { semanticAnalysis.action33(); }
+|   <DIFFERENT> ExprArithLogic() { semanticAnalysis.action34(); }
+|   <SMALLER> ExprArithLogic() { semanticAnalysis.action35(); }
+|   <GREATER> ExprArithLogic() { semanticAnalysis.action36(); }
+|   <SMALLER_EQUAL> ExprArithLogic() { semanticAnalysis.action37(); }
+|   <GREATER_EQUAL> ExprArithLogic() { semanticAnalysis.action38(); }
+|   Epsilon()
+}
+
+void ExprArithLogic() :
+{}
+{
+    Term2() LessPriority()
+}
+
+void LessPriority() :
+{}
+{
+    <PLUS> Term2() LessPriority() { semanticAnalysis.action39(); }
+|   <MINUS> Term2() LessPriority() { semanticAnalysis.action40(); }
+|   <OR> Term2() LessPriority() { semanticAnalysis.action41(); }
+|   Epsilon()
+}
+
+void Term2() :
+{}
+{
+    Term1() MidPriority()
+}
+
+void MidPriority() :
+{}
+{
+    <MULTIPLICATION> Term1() MidPriority() { semanticAnalysis.action42(); }
+|   <DIVISION> Term1() MidPriority() { semanticAnalysis.action43(); }
+|   <INTEGER_DIVISION> Term1() MidPriority() { semanticAnalysis.action44(); }
+|   <REST> Term1() MidPriority() { semanticAnalysis.action45(); }
+|   <AND> Term1() MidPriority() { semanticAnalysis.action46(); }
+|   Epsilon()
+}
+
+void Term1() :
+{}
+{
+    Element() GreatPriority()
+}
+
+void GreatPriority() :
+{}
+{
+    <POWER> Element() GreatPriority() { semanticAnalysis.action47(); }
+|   Epsilon()
+}
+
+void Element() :
+{}
+{
+    <IDENTIFIER> { errorMessages += semanticAnalysis.action19(token.image); } Index() { errorMessages += semanticAnalysis.action20(); }
+|   <NATURAL_CONST> { semanticAnalysis.action21(token.image); }
+|   <REAL_CONST> { semanticAnalysis.action22(token.image); }
+|   <CHAR_CONST> { semanticAnalysis.action23(token.image); }
+|   <TRUE> { semanticAnalysis.action48(); }
+|   <FALSE> { semanticAnalysis.action49(); }
+|   <LPARENTHESES> Expression() <RPARANTHESES>
+|   <NOT> <LPARENTHESES> Expression() <RPARANTHESES> { semanticAnalysis.action50(); }
+}
+
+void Epsilon() : {}
+{
+     {}
+}
+

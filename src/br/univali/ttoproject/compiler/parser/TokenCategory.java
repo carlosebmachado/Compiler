@@ -8,7 +8,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return String.format("Keyword(%d)", id());
+            return String.format("keyword (%d)", id());
         }
     },
     SpecialSymbol {
@@ -18,7 +18,7 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return String.format("SpecialSymbol(%d)", id());
+            return String.format("special symbol (%d)", id());
         }
     },
     Identifier {
@@ -28,27 +28,27 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return String.format("Identifier(%d)", id());
+            return String.format("identifier (%d)", id());
         }
     },
-    LiteralConstant {
+    CharConstant {
         public int id() {
             return 3;
         }
 
         @Override
         public String toString() {
-            return String.format("LiteralConstant(%d)", id());
+            return String.format("LITERAL_CONSTANT (%d)", id());
         }
     },
-    IntegerConstant {
+    NaturalConstant {
         public int id() {
             return 4;
         }
 
         @Override
         public String toString() {
-            return String.format("IntegerConstant(%d)", id());
+            return String.format("natual const (%d)", id());
         }
     },
     RealConstant {
@@ -58,17 +58,27 @@ public enum TokenCategory {
 
         @Override
         public String toString() {
-            return String.format("RealConstant(%d)", id());
+            return String.format("real const (%d)", id());
         }
     },
-    Unknown {
+    BooleanConstant {
         public int id() {
             return 6;
         }
 
         @Override
         public String toString() {
-            return String.format("Unknown(%d)", id());
+            return String.format("boolean const (%d)", id());
+        }
+    },
+    Unknown {
+        public int id() {
+            return 7;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("unknown (%d)", id());
         }
     }
 }

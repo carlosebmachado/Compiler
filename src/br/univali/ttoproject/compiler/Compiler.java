@@ -1,16 +1,24 @@
 package br.univali.ttoproject.compiler;
 
+import br.univali.ttoproject.compiler.parser.CategorizedToken;
+import br.univali.ttoproject.compiler.parser.ParseException;
+import br.univali.ttoproject.compiler.parser.Parser;
+import br.univali.ttoproject.compiler.parser.ParserConstants;
+import br.univali.ttoproject.vm.Instruction;
+
 import java.io.FileNotFoundException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.univali.ttoproject.compiler.parser.*;
-
 public class Compiler {
 
     private Parser parser;
+
+    private ArrayList<Instruction<Integer, Object>> program;
+    private String messages;
 
     public Compiler() {
         setParser(null);
@@ -18,7 +26,54 @@ public class Compiler {
 
     private String buildLexicalErrorMessage(CategorizedToken token) {
         return "Lexical error at line " + token.beginLine + ", column " + token.beginColumn
-                + ". The following character '" + token.image + "' is invalid.\n\n";
+                + ". The following character '" + token.image + "' is invalid.\n";
+    }
+
+    public boolean compile(String input) {
+        parser = new Parser(new StringReader(input));
+
+        try {
+            parser.Start();
+
+            if (parser.getErrorMessages().isEmpty()) {
+                this.messages = "Program successfully compiled.";
+                this.program = parser.getSemanticAnalysis().getProgram();
+                return true;
+            } else {
+                this.messages = parser.getErrorMessages();
+                this.program = null;
+                return false;
+            }
+        } catch (ParseException e) {
+            this.messages += e.getMessage();
+            this.program = null;
+            return false;
+        }
+    }
+
+    public String lexer() {
+        StringBuilder messages = new StringBuilder();
+
+        CategorizedToken token = (CategorizedToken) parser.getNextToken();
+        while (token.kind != ParserConstants.EOF) {
+            if (token.isUnknownKind()) {
+                messages.append(buildLexicalErrorMessage(token));
+            } else {
+                // DEBUG DO TOKEN
+                //messages.append(token);
+            }
+            token = (CategorizedToken) parser.getNextToken();
+        }
+
+        return messages.toString();
+    }
+
+    public void parser() {
+        try {
+            parser.Start();
+        } catch (ParseException e) {
+            //e.printStackTrace();
+        }
     }
 
     public String build(Reader reader) {
@@ -49,6 +104,14 @@ public class Compiler {
         }
 
         return tokens;
+    }
+
+    public ArrayList<Instruction<Integer, Object>> getProgram() {
+        return program;
+    }
+
+    public String getMessages() {
+        return messages;
     }
 
     public Parser getParser() {
